@@ -29,7 +29,7 @@ namespace Used_UDP
 
         private void btn_listen_Click(object sender, EventArgs e)
         {
-            udpServer = new UdpClient(int.Parse(text_SendPort.Text));
+            udpServer = new UdpClient(int.Parse(text_SentPortServer.Text));
 
             text_info.Text = "Слушаем порт: " + port_client;
 

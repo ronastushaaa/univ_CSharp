@@ -45,6 +45,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.text_SendIP = new System.Windows.Forms.TextBox();
+            this.text_SentPortServer = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.Server.SuspendLayout();
             this.Client.SuspendLayout();
             this.SuspendLayout();
@@ -146,6 +148,8 @@
             // 
             // Client
             // 
+            this.Client.Controls.Add(this.label7);
+            this.Client.Controls.Add(this.text_SentPortServer);
             this.Client.Controls.Add(this.label4);
             this.Client.Controls.Add(this.text_SendName);
             this.Client.Controls.Add(this.text_SendPort);
@@ -210,6 +214,22 @@
             this.text_SendIP.Size = new System.Drawing.Size(189, 22);
             this.text_SendIP.TabIndex = 4;
             // 
+            // text_SentPortServer
+            // 
+            this.text_SentPortServer.Location = new System.Drawing.Point(204, 95);
+            this.text_SentPortServer.Name = "text_SentPortServer";
+            this.text_SentPortServer.Size = new System.Drawing.Size(100, 22);
+            this.text_SentPortServer.TabIndex = 12;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(201, 76);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(73, 16);
+            this.label7.TabIndex = 13;
+            this.label7.Text = "Server port";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -249,6 +269,8 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox text_SendIP;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox text_SentPortServer;
     }
 }
 
