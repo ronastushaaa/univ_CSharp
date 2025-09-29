@@ -29,9 +29,7 @@ namespace Used_UDP
 
         private void btn_listen_Click(object sender, EventArgs e)
         {
-            ip = IPAddress.Parse(text_SendIP.Text.Trim());
-            port_client = int.Parse(text_SendPort.Text);
-            udpServer = new UdpClient(port_client);
+            udpServer = new UdpClient(int.Parse(text_SendPort.Text));
 
             text_info.Text = "Слушаем порт: " + port_client;
 
@@ -44,6 +42,9 @@ namespace Used_UDP
         {
             udpClient = new UdpClient();
             myDelegate = new ShowMessage(ShowMessageMethod);
+            text_SendIP.Text = "127.0.0.1";
+            text_SendPort.Text = "8080";
+            text_listen_port.Text = "8080";
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -60,7 +61,7 @@ namespace Used_UDP
         {
             while (true)
             {
-                IPEndPoint remoteIPEndPoint = new IPEndPoint(IPAddress.Any, 0);
+                IPEndPoint remoteIPEndPoint = new IPEndPoint(IPAddress.Any,  0);
                 byte[] content = udpServer.Receive(ref remoteIPEndPoint);
 
                 if (content.Length > 0)
@@ -74,6 +75,8 @@ namespace Used_UDP
 
         private void btn_send__Click(object sender, EventArgs e)
         {
+            ip = IPAddress.Parse(text_SendIP.Text.Trim());
+            port_client = int.Parse(text_SendPort.Text);
             IPEndPoint ipEndPoint = new IPEndPoint(ip, port_client);
             byte[] input = Encoding.ASCII.GetBytes(text_SendMsg.Text);
             try

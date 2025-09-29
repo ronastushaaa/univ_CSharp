@@ -167,9 +167,9 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(9, 76);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(80, 16);
+            this.label4.Size = new System.Drawing.Size(77, 16);
             this.label4.TabIndex = 11;
-            this.label4.Text = "Name Client";
+            this.label4.Text = "Client name";
             // 
             // text_SendName
             // 
@@ -199,9 +199,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(9, 32);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(50, 16);
+            this.label1.Size = new System.Drawing.Size(58, 16);
             this.label1.TabIndex = 3;
-            this.label1.Text = "Adress";
+            this.label1.Text = "Address";
             // 
             // text_SendIP
             // 
