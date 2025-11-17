@@ -21,10 +21,6 @@ namespace Data_Exchange_COM
 
         }
 
-        private void EnterPorts()
-        {
-            comboBox1.Items.AddRange(SerialPort.GetPortNames()); //добавляет послледовательность из имён портов.
-        }
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -32,7 +28,7 @@ namespace Data_Exchange_COM
             {
                 serialPort.PortName = comboBox1.SelectedItem.ToString();
                 serialPort.BaudRate = 9600; //скорость передачи данных
-                serialPort.DataReceived += new SerialDataReceivedEventHandler();
+                //serialPort.DataReceived += new SerialDataReceivedEventHandler();
                 try
                 {
                     serialPort.Open();
@@ -43,6 +39,23 @@ namespace Data_Exchange_COM
                     MessageBox.Show("Connection error");
                 }
             }
+        }
+
+        private void PrintControlBoardLog(string s)
+        {
+            ReportListBox.Items.Add(s);                    // Добавляем строку в ListBox
+            while (ReportListBox.Items.Count > CMaxVisibleLogLines)
+            {
+                ReportListBox.Items.RemoveAt(0);           // Удаляем старые строки
+            }
+            ReportListBox.SelectedIndex = ReportListBox.Items.Count - 1;
+            ReportListBox.SelectedIndex = -1;              // Сбрасываем выделение
+        }
+        private void ControlBoardSerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            SerialPort sp = (SerialPort)sender;
+            string indata = sp.ReadExisting();                          // Читаем все доступные данные
+            ControlBoardComPortDataReciveBuffer += indata;              // Добавляем в буфер
         }
     }
 }

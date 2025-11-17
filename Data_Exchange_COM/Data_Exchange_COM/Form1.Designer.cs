@@ -36,13 +36,15 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
-            this.textBox2 = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
+            this.ReportListBox = new System.Windows.Forms.ListBox();
             this.SuspendLayout();
             // 
             // comboBox1
             // 
             this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Items.AddRange(new object[] {
+            "COM4"});
             this.comboBox1.Location = new System.Drawing.Point(30, 59);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(200, 24);
@@ -92,14 +94,6 @@
             this.button2.Text = "Send";
             this.button2.UseVisualStyleBackColor = true;
             // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(30, 180);
-            this.textBox2.Multiline = true;
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(362, 22);
-            this.textBox2.TabIndex = 6;
-            // 
             // label3
             // 
             this.label3.AutoSize = true;
@@ -109,13 +103,22 @@
             this.label3.TabIndex = 7;
             this.label3.Text = "Message to PC:";
             // 
+            // ReportListBox
+            // 
+            this.ReportListBox.FormattingEnabled = true;
+            this.ReportListBox.ItemHeight = 16;
+            this.ReportListBox.Location = new System.Drawing.Point(30, 194);
+            this.ReportListBox.Name = "ReportListBox";
+            this.ReportListBox.Size = new System.Drawing.Size(368, 52);
+            this.ReportListBox.TabIndex = 8;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(441, 258);
+            this.Controls.Add(this.ReportListBox);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.textBox2);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.textBox1);
@@ -138,8 +141,8 @@
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ListBox ReportListBox;
     }
 }
 

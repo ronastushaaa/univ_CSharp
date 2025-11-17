@@ -1,6 +1,6 @@
 ﻿namespace Used_UDP
 {
-    partial class Form1
+    partial class Romanovskaia241_324_LAB2
     {
         /// <summary>
         /// Обязательная переменная конструктора.
@@ -39,14 +39,14 @@
             this.label3 = new System.Windows.Forms.Label();
             this.text_listen_port = new System.Windows.Forms.TextBox();
             this.Client = new System.Windows.Forms.GroupBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.text_SentPortServer = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.text_SendName = new System.Windows.Forms.TextBox();
             this.text_SendPort = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.text_SendIP = new System.Windows.Forms.TextBox();
-            this.text_SentPortServer = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
             this.Server.SuspendLayout();
             this.Client.SuspendLayout();
             this.SuspendLayout();
@@ -166,6 +166,22 @@
             this.Client.TabStop = false;
             this.Client.Text = "Client";
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(201, 76);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(73, 16);
+            this.label7.TabIndex = 13;
+            this.label7.Text = "Server port";
+            // 
+            // text_SentPortServer
+            // 
+            this.text_SentPortServer.Location = new System.Drawing.Point(204, 95);
+            this.text_SentPortServer.Name = "text_SentPortServer";
+            this.text_SentPortServer.Size = new System.Drawing.Size(100, 22);
+            this.text_SentPortServer.TabIndex = 12;
+            // 
             // label4
             // 
             this.label4.AutoSize = true;
@@ -214,23 +230,7 @@
             this.text_SendIP.Size = new System.Drawing.Size(189, 22);
             this.text_SendIP.TabIndex = 4;
             // 
-            // text_SentPortServer
-            // 
-            this.text_SentPortServer.Location = new System.Drawing.Point(204, 95);
-            this.text_SentPortServer.Name = "text_SentPortServer";
-            this.text_SentPortServer.Size = new System.Drawing.Size(100, 22);
-            this.text_SentPortServer.TabIndex = 12;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(201, 76);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(73, 16);
-            this.label7.TabIndex = 13;
-            this.label7.Text = "Server port";
-            // 
-            // Form1
+            // Romanovskaia241_324_LAB2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -238,8 +238,8 @@
             this.Controls.Add(this.Client);
             this.Controls.Add(this.Server);
             this.Controls.Add(this.text_info);
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Name = "Romanovskaia241_324_LAB2";
+            this.Text = "Romanovskaia241_324_LAB2";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.Server.ResumeLayout(false);

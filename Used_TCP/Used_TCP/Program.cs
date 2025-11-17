@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Used_UDP
+namespace Used_TCP
 {
     internal static class Program
     {
@@ -16,7 +16,7 @@ namespace Used_UDP
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Romanovskaia241_324_LAB2());
+            Application.Run(new Romanovskaia241_324_LAB3());
         }
     }
 }
