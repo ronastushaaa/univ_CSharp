@@ -16,46 +16,50 @@ using System.Net.Http;
 using System.Runtime.Remoting.Messaging;
 using System.IO.Ports;
 using System.Runtime.Remoting.Contexts;
+using System.Security.Cryptography;
 
 namespace Used_TCP
 {
     public partial class Romanovskaia241_324_LAB3 : Form
     {
-        private TcpListener Tlistener;
-        private Thread listenerThread;
-        private bool isServerRunning = false;
-        public delegate void ShowMessage(string message);
+        TClientInfo FServerInfo;
+        private int serverPort;
+        private TcpListener FListener;
+        private Thread FListenerThread;
+        private bool FIsServerRunning = false;
+
+        TClientInfo FClientInfo;
+        private int clientPort;
+        private TcpClient FClient;
+        private Thread FClientThread;
+        private NetworkStream FClientStream;
+        private bool FIsClientConnected = false;
+
         public ShowMessage myDelegate;
-
-        private TcpClient Lclient; // FClient
-        private NetworkStream clientStream;
-        private bool isClientConnected = false;
-
-        private int serverPort, port_client;
-        //private IPAddress ip;
-
-        TClientInfo FClient;
-        TClientInfo FSClient;
+        public delegate void ShowMessage(string message);
 
         private Bitmap drawingBitmap; //растровое изоображение - холст для изображения
         private Graphics drawingGraphics;
         private Pen currentPen; //перо для рисования
         private Brush currentBrush; //заливка
 
-        private delegate void AddServerMessageDelegate(string prefix, string message);
-        private AddServerMessageDelegate addServerMessageDelegate;
+        //private delegate void AddServerMessageDelegate(string prefix, string message);
+        //private AddServerMessageDelegate addServerMessageDelegate;
 
 
         public Romanovskaia241_324_LAB3()
         {
             InitializeComponent();
-            addServerMessageDelegate = new AddServerMessageDelegate(AddtoServerINFO);
+            //addServerMessageDelegate = new AddServerMessageDelegate(AddtoServerINFO);
+            Drawing();
         }
 
 
+        // ----- Сервер -----
+
         private void server_start_btn_Click(object sender, EventArgs e)
         {
-            if (!isServerRunning)
+            if (!FIsServerRunning)
             {
                 serverPort = int.Parse(server_port_txt.Text);
                 StartServer(serverPort);
@@ -63,27 +67,6 @@ namespace Used_TCP
             else
             {
                 StopServer();
-            }
-        }
-
-        private void StartServer(int serverPort)
-        {
-            try
-            {
-                Tlistener = new TcpListener(IPAddress.Any, serverPort);
-                listenerThread = new Thread(new ThreadStart(ReceiveMessage));
-                listenerThread.IsBackground = true;
-                listenerThread.Start();
-
-                AddtoServerINFO(" ", $"Сервер запущен на порту: {serverPort}");
-
-                isServerRunning = true;
-                server_start_btn.Text = "Остановить";
-            }
-
-            catch (Exception ex)
-            {
-                AddtoServerINFO(" ", "Ошибка запуска сервера!");
             }
         }
 
@@ -100,93 +83,71 @@ namespace Used_TCP
             }
         }
 
-        private void AddtoClientINFO(string who, string clientMessage)
-        {
-            if (client_chat_lstbox.InvokeRequired)
-            {
-                client_chat_lstbox.Invoke(new Action<string, string>(AddtoServerINFO), who, clientMessage); //создаем экземпляр делегата, который указывает на нашу функцию
-            }
-            else
-            {
-                client_chat_lstbox.Items.Add($"{DateTime.Now:HH:mm:ss} - {who}{clientMessage}");
-                client_chat_lstbox.SelectedIndex = client_chat_lstbox.Items.Count - 1; // опускаемся к последнему сообщению
-            }
-        }
-
-        private void StopServer()
-        {
-            isServerRunning = false;
-            if (Tlistener != null)
-            {
-                try
-                {
-                    Tlistener.Stop();
-                }
-                catch (Exception ex)
-                {
-                    AddtoServerINFO(" ", "Ошибка остановки сервера!");
-                }
-            }
-            server_start_btn.Text = "Слушать";
-            AddtoServerINFO(" ", "Сервер остановлен!"); 
-        }
-
-        private void client_conect_btn_Click(object sender, EventArgs e)
-        {
-            if (!isClientConnected)
-            {
-                IPAddress ip = IPAddress.Parse(client_ip_txt.Text.Trim());
-                port_client = int.Parse(client_port_txt.Text);
-                ConnectToServer(ip, port_client);
-            }
-            else
-            {
-                //DisconnectFromServer();
-            }
-        }
-
-        private void ConnectToServer(IPAddress ip, int port)
+        private void StartServer(int serverPort)
         {
             try
             {
-                Tclient = new TcpClient();
-                Tclient.Connect(ip, port_client);
-                clientStream = Tclient.GetStream();
-
-                isClientConnected = true;
-                client_conect_btn.Text = "Отключиться";
-                client_chat_lstbox.Text += "\nКлиент подключился к серверу";
+                FListener = new TcpListener(IPAddress.Any, serverPort);
+                FListenerThread = new Thread(new ThreadStart(ReceiveMessage));
+                FListenerThread.IsBackground = true;
+                FListenerThread.Start();
+                AddtoServerINFO("", $"Сервер запущен на порту: {serverPort}");
+                FIsServerRunning = true;
+                server_start_btn.Text = "Остановить";
             }
-            catch { }
+            catch (Exception ex)
+            {
+                AddtoServerINFO("", "Ошибка запуска сервера!");
+            }
+        }
+
+
+        private void StopServer()
+        {
+            FIsServerRunning = false;
+            if (FListener != null)
+            {
+                try
+                {
+                    FListener.Stop();
+                }
+                catch (Exception ex)
+                {
+                    AddtoServerINFO("", "Ошибка остановки сервера!");
+                }
+            }
+            server_start_btn.Text = "Слушать";
+            AddtoServerINFO("", "Сервер остановлен!"); 
         }
 
         private void ReceiveMessage()
         {
             try
             {
+                FListener.Start();
                 AddtoServerINFO(" ", "Сервер начал прослушивание");
-
-                while (isServerRunning)
+                while (FIsServerRunning)
                 {
-                    Lclient = Tlistener.AcceptTcpClient(); // Получаем входящие подключение
-                    TClientInfo clientInfo = new TClientInfo(Lclient, ((IPEndPoint)Lclient.Client.RemoteEndPoint).Port)
-                    //clientStream = Tclient.GetStream(); // получаем сетевой поток для чтения и записи
-                    AddtoServerINFO("", $"Клиент подключен {Lclient.Client.RemoteEndPoint}");
-
-                    //HandleClient(Tclient);
+                    TcpClient client = FListener.AcceptTcpClient(); // Получаем входящие подключение
+                    AddtoServerINFO("", $"Клиент подключен {client.Client.RemoteEndPoint}");
+                    HandleClientData(client);
                 }
             }
             catch (Exception ex)
             {
-
+                if (FIsServerRunning)
+                {
+                    AddtoServerINFO("", $"Ошибка сервера: {ex.Message}");
+                }
             }
         }
 
-        private void HandleCLient(TClientInfo clientInfo) // обработка данных клиента
+        private void HandleClientData(TcpClient client) 
         {
-            TcpClient client = clientInfo.GetClient();
+            const int BUF_SIZE = 4096;
             NetworkStream stream = client.GetStream();
-            byte[] message = new byte[4096];
+            byte[] message = new byte[BUF_SIZE];
+            StringBuilder command = new StringBuilder();
             int bytes;
 
             while (true)
@@ -194,7 +155,7 @@ namespace Used_TCP
                 bytes = 0;
                 try
                 {
-                    bytes = stream.Read(message, 0, 4096);
+                    bytes = stream.Read(message, 0, BUF_SIZE);
                 }
                 catch
                 {
@@ -206,21 +167,42 @@ namespace Used_TCP
                     break;
                 }
 
-                string rmessage = Encoding.ASCII.GetString(message, 0, bytes).Trim();
-                this.Invoke(addServerMessageDelegate, new object[] { "RCV: ",rmessage });
-
-                string response = CommandProcess(rmessage);
-                byte[] responses = Encoding.ASCII.GetBytes(response);
-
-                stream.Write(responses, 0, responses.Length);
-                this.Invoke(addServerMessageDelegate, new object[] { "SND: ", response });
+                string req = Encoding.ASCII.GetString(message, 0, bytes);
+                AddtoServerINFO("RCV: ", req);
+                // message: RECTANGLE 
+                // message: 1 2 2 
+                // message: 3 23\nCIR
+                // command: RECTANGLE 1 2 23 23 [\n]
+                //command += "qq";
+                //this.Invoke(addServerMessageDelegate, new object[] { "CMD: ", command });
+                command.Append(req);
+                string stringCheck = command.ToString();
+                int index = stringCheck.IndexOf('S');
+                if (index != -1)
+                {
+                    string correctCommand = stringCheck.Substring(0, index).Trim();
+                    string remainingData = stringCheck.Substring(index + 1);
+                    command.Clear();
+                    command.Append(remainingData);
+                    if (!string.IsNullOrEmpty(correctCommand))
+                    {
+                        string ans = CommandProcess(correctCommand);
+                        byte[] answers = Encoding.ASCII.GetBytes(ans);
+                        stream.Write(answers, 0, answers.Length);
+                        AddtoServerINFO("SND: ", ans);
+                        //this.Invoke(addServerMessageDelegate, new object[] { "SND: ", response });
+                    }
+                }
             }
+            //отключение
+            AddtoServerINFO("", "Клиент отключен");
+            client.Close();
         }
 
 
         private string CommandProcess(string command)
         {
-            string[] elements = command.Split(' ');
+            string[] elements = command.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             string elemntsType = elements[0].ToUpper(); //преобразует в верхний регистр
 
@@ -239,9 +221,9 @@ namespace Used_TCP
                             sever_pictureBox.Invalidate();
                             return "Ок. Линия нарисована";
                         }
-                        return "ERROR";
+                        break;
                     case "RECTANGLE":
-                        if (elements.Length ==5)
+                        if (elements.Length == 5)
                         {
                             int x = int.Parse(elements[1]);
                             int y = int.Parse(elements[2]);
@@ -251,7 +233,7 @@ namespace Used_TCP
                             sever_pictureBox.Invalidate();
                             return "OK: Прямоугольник нарисован";
                         }
-                        return "ERROR";
+                        break;
                     case "CIRCLE":
                         if (elements.Length == 4)
                         {
@@ -262,7 +244,7 @@ namespace Used_TCP
                             sever_pictureBox.Invalidate();
                             return "OK: Круг нарисован";
                         }
-                        return "ERROR";
+                        break;
                     case "TEXT":
                         if (elements.Length >= 4)
                         {
@@ -273,22 +255,153 @@ namespace Used_TCP
                             sever_pictureBox.Invalidate();
                             return "OK: Текст добавлен";
                         }
-                        return "ERROR";
+                        break;
+                    case "CLEAR":
+                        drawingGraphics.Clear(Color.White);
+                        sever_pictureBox.Invalidate();
+                        return "OK";
+                    case "HELP":
+                        return "COMMANDS:\nLINE <x1> <y1> <x2> <y2>\n" +
+                            "RECTANGLE <x> <y> <width> <height>\n" +
+                            "CIRCLE <x> <y> <radius>\n" +
+                            "TEXT <x> <y> <text>\n" +
+                            "CLEAR";
                     default:
-                        return "ERROR";
+                        break;
                 }
+                AddtoServerINFO("ERR: ", "Недопустимая команда");
+                return "ERROR";
             }
             catch (Exception ex)
             {
+                AddtoServerINFO("ERR: ", ex.Message);
                 return "ERROR";
             }
         }
 
+        private void Drawing()
+        {
+            drawingBitmap = new Bitmap(sever_pictureBox.Width, sever_pictureBox.Height);
+            drawingGraphics = Graphics.FromImage(drawingBitmap);
+            drawingGraphics.Clear(Color.White);
+            sever_pictureBox.Image = drawingBitmap;
 
+            currentPen = new Pen(Color.Black, 2);
+            currentBrush = Brushes.Black;
+        }
+
+
+        // ----- Клиент -----
+        private void AddtoClientINFO(string who, string clientMessage)
+        {
+            if (client_chat_lstbox.InvokeRequired)
+            {
+                client_chat_lstbox.Invoke(new Action<string, string>(AddtoServerINFO), who, clientMessage); //создаем экземпляр делегата, который указывает на нашу функцию
+            }
+            else
+            {
+                client_chat_lstbox.Items.Add($"{DateTime.Now:HH:mm:ss} - {who}{clientMessage}");
+                client_chat_lstbox.SelectedIndex = client_chat_lstbox.Items.Count - 1; // опускаемся к последнему сообщению
+            }
+        }
+
+        private void client_conect_btn_Click(object sender, EventArgs e)
+        {
+            if (!FIsClientConnected)
+            {
+                IPAddress ip = IPAddress.Parse(client_ip_txt.Text.Trim());
+                clientPort = int.Parse(client_port_txt.Text);
+                ConnectToServer(ip, clientPort);
+            }
+            else
+            {
+                DisconnectFromServer();
+            }
+        }
+
+        private void ConnectToServer(IPAddress ip, int port)
+        {
+            try
+            {
+                FClient = new TcpClient();
+                FClient.Connect(ip, port);
+                //FClientStream = FClient.GetStream();
+
+                FClientThread = new Thread(new ThreadStart(RecieveMessageFromServer));
+                FClientThread.IsBackground = true;
+                FClientThread.Start();
+                FIsClientConnected = true;
+                client_conect_btn.Text = "Отключиться";
+                AddtoClientINFO("", $"Клиент подключился к серверу: {port}");
+            }
+            catch (Exception ex)
+            {
+                AddtoClientINFO("", $"Ошибка подключения: {ex.Message}");
+            }
+        }
+
+        private void DisconnectFromServer()
+        {
+            FIsClientConnected = false;
+            //
+        }
+
+        private void RecieveMessageFromServer() //ответы у сервера
+        {
+            FClientStream = FClient.GetStream();
+            const int BUF_SIZE = 4096;
+            byte[] message = new byte[BUF_SIZE];
+            int bytes;
+            while(FIsClientConnected)
+            {
+                bytes = 0;
+                try
+                {
+                    bytes = FClientStream.Read(message, 0, message.Length);
+                }
+                catch
+                {
+                    break;
+                }
+                if (bytes == 0)
+                {
+                    break;
+                }
+
+                string receivedMessage = Encoding.ASCII.GetString(message, 0, bytes).Trim();
+                AddtoClientINFO("RCV: ", receivedMessage);
+            }
+            //отключение 
+        }
+
+        private void client_send_btn_Click(object sender, EventArgs e)
+        {
+            string clientMessage = client_message_txt.Text;
+            SendMessage(clientMessage);
+            client_message_txt.Clear();
+        }
+
+        private void SendMessage(string clientMessage)
+        {
+            if (FIsClientConnected && !string.IsNullOrEmpty(clientMessage))
+            {
+                try
+                {
+                    byte[] messageData = Encoding.ASCII.GetBytes(clientMessage);
+                    FClientStream.Write(messageData, 0, messageData.Length);
+                    AddtoClientINFO("SND: ", clientMessage);
+                }
+                catch (Exception ex)
+                {
+                    AddtoClientINFO("", $"Ошибка отправки: {ex.Message}");
+                    //DisconnectFromServer();
+                }
+            }       
+        }
     }
     public class TClientInfo
     {
-        private TcpClient FClient; // FClient
+        private TcpClient FClient; 
         private int FPort;
 
         //public TcpClient Port get FPort set FPort;
@@ -303,15 +416,14 @@ namespace Used_TCP
         {
             return FClient;
         }
+        public void SetClient(TcpClient client)
+        {
+            FClient = client;
+        }
 
         public int GetPort()
         {
             return FPort;
-        }
-
-        public void SetClient(TcpClient client)
-        {
-            FClient = client;
         }
 
         public void SetPort(int port)

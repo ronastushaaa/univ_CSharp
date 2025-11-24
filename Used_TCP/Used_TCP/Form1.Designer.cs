@@ -138,18 +138,19 @@
             // 
             this.sever_pictureBox.Location = new System.Drawing.Point(476, 34);
             this.sever_pictureBox.Name = "sever_pictureBox";
-            this.sever_pictureBox.Size = new System.Drawing.Size(424, 343);
+            this.sever_pictureBox.Size = new System.Drawing.Size(424, 368);
             this.sever_pictureBox.TabIndex = 12;
             this.sever_pictureBox.TabStop = false;
             // 
             // server_start_btn
             // 
-            this.server_start_btn.Location = new System.Drawing.Point(344, 31);
+            this.server_start_btn.Location = new System.Drawing.Point(146, 32);
             this.server_start_btn.Name = "server_start_btn";
-            this.server_start_btn.Size = new System.Drawing.Size(75, 23);
+            this.server_start_btn.Size = new System.Drawing.Size(137, 23);
             this.server_start_btn.TabIndex = 11;
             this.server_start_btn.Text = "Слушать";
             this.server_start_btn.UseVisualStyleBackColor = true;
+            this.server_start_btn.Click += new System.EventHandler(this.server_start_btn_Click);
             // 
             // label1
             // 
@@ -164,7 +165,7 @@
             // 
             this.server_port_txt.Location = new System.Drawing.Point(48, 32);
             this.server_port_txt.Name = "server_port_txt";
-            this.server_port_txt.Size = new System.Drawing.Size(248, 22);
+            this.server_port_txt.Size = new System.Drawing.Size(92, 22);
             this.server_port_txt.TabIndex = 9;
             // 
             // tabControl2
@@ -243,6 +244,7 @@
             this.client_send_btn.TabIndex = 17;
             this.client_send_btn.Text = "Отправить";
             this.client_send_btn.UseVisualStyleBackColor = true;
+            this.client_send_btn.Click += new System.EventHandler(this.client_send_btn_Click);
             // 
             // client_message_txt
             // 
@@ -262,16 +264,17 @@
             // 
             // client_conect_btn
             // 
-            this.client_conect_btn.Location = new System.Drawing.Point(347, 46);
+            this.client_conect_btn.Location = new System.Drawing.Point(307, 53);
             this.client_conect_btn.Name = "client_conect_btn";
-            this.client_conect_btn.Size = new System.Drawing.Size(123, 41);
+            this.client_conect_btn.Size = new System.Drawing.Size(123, 26);
             this.client_conect_btn.TabIndex = 14;
             this.client_conect_btn.Text = "Подключиться";
             this.client_conect_btn.UseVisualStyleBackColor = true;
+            this.client_conect_btn.Click += new System.EventHandler(this.client_conect_btn_Click);
             // 
             // client_port_txt
             // 
-            this.client_port_txt.Location = new System.Drawing.Point(271, 55);
+            this.client_port_txt.Location = new System.Drawing.Point(246, 55);
             this.client_port_txt.Name = "client_port_txt";
             this.client_port_txt.Size = new System.Drawing.Size(55, 22);
             this.client_port_txt.TabIndex = 13;
@@ -298,7 +301,7 @@
             // 
             this.client_ip_txt.Location = new System.Drawing.Point(56, 55);
             this.client_ip_txt.Name = "client_ip_txt";
-            this.client_ip_txt.Size = new System.Drawing.Size(188, 22);
+            this.client_ip_txt.Size = new System.Drawing.Size(184, 22);
             this.client_ip_txt.TabIndex = 10;
             // 
             // Romanovskaia241_324_LAB3
