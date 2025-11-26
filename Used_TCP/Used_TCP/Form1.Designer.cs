@@ -30,6 +30,7 @@
         {
             this.TCP_connect = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.clientChoose = new System.Windows.Forms.ComboBox();
             this.server_comand_txt = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
@@ -72,6 +73,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.clientChoose);
             this.tabPage1.Controls.Add(this.server_comand_txt);
             this.tabPage1.Controls.Add(this.label8);
             this.tabPage1.Controls.Add(this.label7);
@@ -89,6 +91,18 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Сервер";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // clientChoose
+            // 
+            this.clientChoose.FormattingEnabled = true;
+            this.clientChoose.Items.AddRange(new object[] {
+            "client",
+            "Telnet-client"});
+            this.clientChoose.Location = new System.Drawing.Point(309, 34);
+            this.clientChoose.Name = "clientChoose";
+            this.clientChoose.Size = new System.Drawing.Size(121, 24);
+            this.clientChoose.TabIndex = 18;
+            this.clientChoose.SelectedIndexChanged += new System.EventHandler(this.clientChoose_SelectedIndexChanged);
             // 
             // server_comand_txt
             // 
@@ -349,6 +363,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox client_ip_txt;
+        private System.Windows.Forms.ComboBox clientChoose;
     }
 }
 
