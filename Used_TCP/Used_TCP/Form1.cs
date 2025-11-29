@@ -41,6 +41,8 @@ namespace Used_TCP
         private Graphics drawingGraphics;
         private Pen currentPen; //перо для рисования
         private Brush currentBrush; //заливка
+        private int indexclient;
+
 
         //private delegate void AddServerMessageDelegate(string prefix, string message);
         //private AddServerMessageDelegate addServerMessageDelegate;
@@ -54,7 +56,9 @@ namespace Used_TCP
             client_ip_txt.Text = "127.0.0.1";
             client_port_txt.Text = "2323";
             server_port_txt.Text = "2323";
-        }
+            clientChoose.SelectedIndex = 0;
+            clientChoose.SelectedIndexChanged += clientChoose_SelectedIndexChanged;
+    }
 
         private void clientChoose_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -69,6 +73,19 @@ namespace Used_TCP
                 client_port_txt.Text = "2323";
             }
         }
+        private bool IsCommand(byte command)
+        {
+            switch (command)
+            {
+                case 0xFB: // WILL
+                case 0xFC: // WON'T
+                case 0xFD: // DO
+                case 0xFE: // DON'T
+                    return true;
+                default:
+                    return false;
+            }
+        }
 
         private string FilterOutNVT(string stringCheck)
         {
@@ -76,16 +93,29 @@ namespace Used_TCP
             int index = 0;
             while (index < stringCheck.Length)
             {
-                if (stringCheck[index] == (char)0xFF)
+                if (stringCheck[index] == (char)0xFF && index + 1 < stringCheck.Length)
                 {
-                    if (index + 2 < stringCheck.Length) // проверяю есть ли команада и парметр
+                    if (stringCheck[index + 1] == (char)0xFF)
                     {
-                        byte IAC = (byte)stringCheck[index];
+                        clientCommand.Append(stringCheck[index + 1]);
+                        index += 2;
+                    }
+                    else if (index + 2 < stringCheck.Length)
+                    {
                         byte command = (byte)stringCheck[index + 1];
-                        byte parametr = (byte)stringCheck[index + 2];
-                        string nvt = $"FF {command:X} {parametr:X}"; // в 16-ом виде
-                        AddtoServerINFO("NVT: ", nvt);
-                        index += 3;
+                        bool isCommand = IsCommand(command);
+                        if (isCommand)
+                        {
+                            byte parametr = (byte)stringCheck[index + 2];
+                            string nvt = $"IAC {command:X2} {parametr:X2}";
+                            AddtoServerINFO("NVT:", nvt);
+                            index += 3;
+                        }
+                        else
+                        {
+                            clientCommand.Append(stringCheck[index]);
+                            index += 1;
+                        }
                     }
                     else
                     {
@@ -230,7 +260,7 @@ namespace Used_TCP
                 message.Append(req);
                 string stringCheck = message.ToString();
 
-                if (clientChoose.SelectedIndex == 2)
+                if (indexclient == 2)
                 {
                     FilterOutNVT(stringCheck);
                 }
