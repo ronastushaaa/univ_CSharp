@@ -73,62 +73,95 @@ namespace Used_TCP
                 client_port_txt.Text = "2323";
             }
         }
-        private bool IsCommand(byte command)
+        private bool IsCommand_2b(char command)
         {
             switch (command)
             {
-                case 0xFB: // WILL
-                case 0xFC: // WON'T
-                case 0xFD: // DO
-                case 0xFE: // DON'T
+                case (char)0xFB: // WILL
+                case (char)0xFC: // WON'T
+                case (char)0xFD: // DO
+                case (char)0xFE: // DON'T
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        private bool IsCommand_3b(char command)
+        {
+            switch (command)
+            {
+                case (char)0xFB: // WILL
+                case (char)0xFC: // WON'T
+                case (char)0xFD: // DO
+                case (char)0xFE: // DON'T
                     return true;
                 default:
                     return false;
             }
         }
 
-        private string FilterOutNVT(string stringCheck)
+        private string FilterOutNVT(ref string rcv_str)
         {
             StringBuilder clientCommand = new StringBuilder();
             int index = 0;
-            while (index < stringCheck.Length)
+            while (index < rcv_str.Length)
             {
-                if (stringCheck[index] == (char)0xFF && index + 1 < stringCheck.Length)
+                byte ch = (byte)rcv_str[index];
+                // Обычный символ (не NVT)
+                if (ch != 0xFF)
                 {
-                    if (stringCheck[index + 1] == (char)0xFF)
-                    {
-                        clientCommand.Append(stringCheck[index + 1]);
-                        index += 2;
-                    }
-                    else if (index + 2 < stringCheck.Length)
-                    {
-                        byte command = (byte)stringCheck[index + 1];
-                        bool isCommand = IsCommand(command);
-                        if (isCommand)
-                        {
-                            byte parametr = (byte)stringCheck[index + 2];
-                            string nvt = $"IAC {command:X2} {parametr:X2}";
-                            AddtoServerINFO("NVT:", nvt);
-                            index += 3;
-                        }
-                        else
-                        {
-                            clientCommand.Append(stringCheck[index]);
-                            index += 1;
-                        }
-                    }
-                    else
-                    {
-                        clientCommand.Append(stringCheck[index]);
-                        index += 1;
-                    }
-                }
-                else
-                {
-                    clientCommand.Append(stringCheck[index]);
+                    clientCommand.Append(ch);
                     index += 1;
+                    continue;
+                }
+
+                // приняли только IAC
+                if (index + 1 >= rcv_str.Length)
+                {
+                    rcv_str = rcv_str.Substring(index);
+                    return clientCommand.ToString();
+                }
+
+                // приняли только IAC + cmd
+                if (index + 2 >= rcv_str.Length)
+                {
+                    char cmd = rcv_str[index + 1];
+                    if (cmd == (char)0xFF)
+                    {
+                        AddtoServerINFO("NVT:", "IAC");
+                        clientCommand.Append((char)0xFF);
+                        index += 2;
+                        continue;
+                    }
+                    if (IsCommand_2b(cmd))
+                    {
+                        string nvt = $"IAC {cmd:X2}";
+                        AddtoServerINFO("NVT:", nvt);
+                        index += 2;
+                        rcv_str = "";
+                        return clientCommand.ToString();
+                    }
+                    if (IsCommand_3b(cmd))
+                    {
+                        rcv_str = rcv_str.Substring(index);
+                        return clientCommand.ToString();
+                    }
+                    AddtoServerINFO("NVT:", "unknown NVT command");
+                    return "";
+                }
+
+                {
+                    // приняли IAC + cmd + prm
+                    char cmd = rcv_str[index + 1];
+                    char prm = rcv_str[index + 2];
+                    string nvt = $"IAC {cmd:X2} {prm:X2}";
+                    AddtoServerINFO("NVT:", nvt);
+                    index += 3;
+                    continue;
                 }
             }
+            // не было NVT команд вообще
+            rcv_str = "";
             return clientCommand.ToString();
         }
 
@@ -233,7 +266,8 @@ namespace Used_TCP
             const int BUF_SIZE = 4096;
             NetworkStream stream = client.GetStream();
             byte[] rcv_buf = new byte[BUF_SIZE];
-            StringBuilder message = new StringBuilder();
+            string rcv_str = "";
+            string message = "";
 
             while (FIsServerRunning)
             {
@@ -257,22 +291,26 @@ namespace Used_TCP
                 // message: 3 23\nCIR
                 // command: RECTANGLE 1 2 23 23 [\n]
                 //this.Invoke(addServerMessageDelegate, new object[] { "CMD: ", command });
-                message.Append(req);
-                string stringCheck = message.ToString();
 
+                // Данные nvt и команды
+                rcv_str += req;
+
+                // только команды
+                indexclient = 2;
                 if (indexclient == 2)
                 {
-                    FilterOutNVT(stringCheck);
+                    message += FilterOutNVT(ref rcv_str);
                 }
-                //FilterOutNVT(stringCheck);
+                else
+                {
+                    message += req;
+                }
 
-                int index = stringCheck.IndexOf('\n');
+                int index = message.IndexOf('\n');
                 if (index >= 0)
                 {
-                    string command = stringCheck.Substring(0, index).Trim();
-                    string tail = stringCheck.Substring(index + 1).Trim();
-                    message.Clear();
-                    message.Append(tail);
+                    string command = message.Substring(0, index).Trim();
+                    message = message.Substring(index + 1).Trim();
                     if (!string.IsNullOrEmpty(command))
                     {
                         string ans = CommandProcess(command);
@@ -514,10 +552,6 @@ namespace Used_TCP
         {
             return FClient;
         }
-        public void SetClient(TcpClient client)
-        {
-            FClient = client;
-        }
 
         public int GetPort()
         {
@@ -531,3 +565,4 @@ namespace Used_TCP
     }
 
 }
+
