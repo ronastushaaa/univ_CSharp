@@ -11,7 +11,6 @@ namespace HTTP_server
 {
     internal class ServerTcp
     {
-        private HttpRequest httpRequest = new HttpRequest();
         private TcpListener FListener;
         private Thread FListenerThread;
         private bool FIsServerRunning = false;
@@ -101,8 +100,8 @@ namespace HTTP_server
 
                 if (req.IndexOf("\r\n\r\n") >= 0)
                 {
-                    string request = httpRequest.searchBody(req);
-                    req = "";
+                    HttpRequest r = HttpRequest.TryParse(req);
+                    Logger.Log("ServerTcp", r.Path);
                 }
             }
             Logger.Log("ServerTcp", "Клиент отключен!");
