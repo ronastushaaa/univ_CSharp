@@ -18,6 +18,7 @@ using System.IO.Ports;
 using System.Runtime.Remoting.Contexts;
 using System.Security.Cryptography;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Collections;
 
 namespace Used_TCP
 {
@@ -41,8 +42,9 @@ namespace Used_TCP
         private Graphics drawingGraphics;
         private Pen currentPen; //перо для рисования
         private Brush currentBrush; //заливка
-        private int indexclient;
 
+        private int indexclient;
+        //private bool isTelnet = false;
 
         //private delegate void AddServerMessageDelegate(string prefix, string message);
         //private AddServerMessageDelegate addServerMessageDelegate;
@@ -65,71 +67,75 @@ namespace Used_TCP
             if (clientChoose.SelectedIndex == 1) // Telnet-сервер
             {
                 server_port_txt.Text = "2323";
-                client_port_txt.Text = "8080"; 
+                client_port_txt.Text = "8080";
+                indexclient = 2;
+                //isTelnet = true;
             }
             else 
             {
                 server_port_txt.Text = "2323";
                 client_port_txt.Text = "2323";
+                indexclient = 1;
+                //isTelnet = false;
             }
         }
-        private bool IsCommand_2b(char command)
+        private bool IsCommand_2b(byte command)
         {
             switch (command)
             {
-                case (char)0xFB: // WILL
-                case (char)0xFC: // WON'T
-                case (char)0xFD: // DO
-                case (char)0xFE: // DON'T
+                case 0xED: // ABORT
+                case 0xEC: // EOF
+                case 0xF3: // BRK
+                case 0xF6: // AYT
                     return true;
                 default:
                     return false;
             }
         }
-        private bool IsCommand_3b(char command)
+        private bool IsCommand_3b(byte command)
         {
             switch (command)
             {
-                case (char)0xFB: // WILL
-                case (char)0xFC: // WON'T
-                case (char)0xFD: // DO
-                case (char)0xFE: // DON'T
+                case 0xFB: // WILL
+                case 0xFC: // WON'T
+                case 0xFD: // DO
+                case 0xFE: // DON'T
                     return true;
                 default:
                     return false;
             }
         }
 
-        private string FilterOutNVT(ref string rcv_str)
+        private string FilterOutNVT(ref List<byte> buf)
         {
-            StringBuilder clientCommand = new StringBuilder();
+            List<byte> clientCommand = new List<byte>();
             int index = 0;
-            while (index < rcv_str.Length)
+            while (index < buf.Count)
             {
-                byte ch = (byte)rcv_str[index];
+                byte ch = buf[index];   
                 // Обычный символ (не NVT)
                 if (ch != 0xFF)
                 {
-                    clientCommand.Append(ch);
+                    clientCommand.Add(ch);
                     index += 1;
                     continue;
                 }
 
                 // приняли только IAC
-                if (index + 1 >= rcv_str.Length)
+                if (index + 1 >= buf.Count)
                 {
-                    rcv_str = rcv_str.Substring(index);
-                    return clientCommand.ToString();
+                    buf.RemoveRange(0, index); //или index-1
+                    return Encoding.UTF8.GetString(clientCommand.ToArray());
                 }
 
                 // приняли только IAC + cmd
-                if (index + 2 >= rcv_str.Length)
+                if (index + 2 >= buf.Count)
                 {
-                    char cmd = rcv_str[index + 1];
-                    if (cmd == (char)0xFF)
+                    byte cmd = buf[index + 1];
+                    if (cmd == 0xFF)
                     {
                         AddtoServerINFO("NVT:", "IAC");
-                        clientCommand.Append((char)0xFF);
+                        clientCommand.Add(0xFF);
                         index += 2;
                         continue;
                     }
@@ -138,13 +144,13 @@ namespace Used_TCP
                         string nvt = $"IAC {cmd:X2}";
                         AddtoServerINFO("NVT:", nvt);
                         index += 2;
-                        rcv_str = "";
-                        return clientCommand.ToString();
+                        buf.RemoveRange(index, 2);
+                        return Encoding.UTF8.GetString(clientCommand.ToArray());
                     }
                     if (IsCommand_3b(cmd))
                     {
-                        rcv_str = rcv_str.Substring(index);
-                        return clientCommand.ToString();
+                        buf.RemoveRange(index, 3);
+                        return Encoding.UTF8.GetString(clientCommand.ToArray());
                     }
                     AddtoServerINFO("NVT:", "unknown NVT command");
                     return "";
@@ -152,8 +158,8 @@ namespace Used_TCP
 
                 {
                     // приняли IAC + cmd + prm
-                    char cmd = rcv_str[index + 1];
-                    char prm = rcv_str[index + 2];
+                    byte cmd = buf[index + 1];
+                    byte prm = buf[index + 2];
                     string nvt = $"IAC {cmd:X2} {prm:X2}";
                     AddtoServerINFO("NVT:", nvt);
                     index += 3;
@@ -161,13 +167,13 @@ namespace Used_TCP
                 }
             }
             // не было NVT команд вообще
-            rcv_str = "";
-            return clientCommand.ToString();
+            buf.Clear();
+            return Encoding.UTF8.GetString(clientCommand.ToArray());
         }
 
-            // ----- Сервер -----
+        // ----- Сервер -----
 
-            private void server_start_btn_Click(object sender, EventArgs e)
+        private void server_start_btn_Click(object sender, EventArgs e)
         {
             if (!FIsServerRunning)
             {
@@ -263,18 +269,24 @@ namespace Used_TCP
 
         private void HandleClientData(TcpClient client) 
         {
-            const int BUF_SIZE = 4096;
             NetworkStream stream = client.GetStream();
-            byte[] rcv_buf = new byte[BUF_SIZE];
-            string rcv_str = "";
+            const int BUF_SIZE = 4096;
+            var tmp_buf = new byte[BUF_SIZE];
+            var rcv_buf = new List<byte>();
             string message = "";
+
+            if (indexclient == 2)
+            {
+                byte[] a = Encoding.UTF8.GetBytes(">");
+                stream.Write(a, 0, a.Length);
+            }
 
             while (FIsServerRunning)
             {
                 int bytes = 0;
                 try
                 {
-                    bytes = stream.Read(rcv_buf, 0, rcv_buf.Length);
+                    bytes = stream.Read(tmp_buf, 0, tmp_buf.Length);
                 }
                 catch
                 {
@@ -284,28 +296,28 @@ namespace Used_TCP
                 {
                     break;
                 }
-                string req = Encoding.ASCII.GetString(rcv_buf, 0, bytes);
-                AddtoServerINFO("RCV: ", req);
-                // message: RECTANGLE 
-                // message: 1 2 2 
-                // message: 3 23\nCIR
-                // command: RECTANGLE 1 2 23 23 [\n]
-                //this.Invoke(addServerMessageDelegate, new object[] { "CMD: ", command });
 
-                // Данные nvt и команды
-                rcv_str += req;
+                string req = Encoding.UTF8.GetString(tmp_buf, 0, bytes);
+                AddtoServerINFO("RCV: ", req);
 
                 // только команды
-                indexclient = 2;
                 if (indexclient == 2)
                 {
-                    message += FilterOutNVT(ref rcv_str);
+                    rcv_buf.AddRange(tmp_buf.Take(bytes));
+                    // Данные nvt и команды
+                    message += FilterOutNVT(ref rcv_buf);
                 }
                 else
                 {
+                    // message: RECTANGLE 
+                    // message: 1 2 2 
+                    // message: 3 23\nCIR
+                    // command: RECTANGLE 1 2 23 23 [\n]
+                    //this.Invoke(addServerMessageDelegate, new object[] { "CMD: ", command });
+
                     message += req;
                 }
-
+                //message = message.Substring(-2);
                 int index = message.IndexOf('\n');
                 if (index >= 0)
                 {
@@ -314,7 +326,7 @@ namespace Used_TCP
                     if (!string.IsNullOrEmpty(command))
                     {
                         string ans = CommandProcess(command);
-                        byte[] snd_buf = Encoding.ASCII.GetBytes(ans);
+                        byte[] snd_buf = Encoding.UTF8.GetBytes(ans + "\r\n> ");
                         stream.Write(snd_buf, 0, snd_buf.Length);
                         AddtoServerINFO("SND: ", ans);
                         //this.Invoke(addServerMessageDelegate, new object[] { "SND: ", response });
@@ -396,7 +408,7 @@ namespace Used_TCP
                     default:
                         break;
                 }
-                AddtoServerINFO("ERR: ", "Недопустимая команда");
+                AddtoServerINFO("ERR: ", "Недопустимая команда ("+ command + ")");
                 return "ERROR";
             }
             catch (Exception ex)
@@ -512,7 +524,7 @@ namespace Used_TCP
 
         private void client_send_btn_Click(object sender, EventArgs e)
         {
-            string clientMessage = client_message_txt.Text;
+            string clientMessage = client_message_txt.Text + "\n";
             SendMessage(clientMessage);
             client_message_txt.Clear();
         }
@@ -533,6 +545,16 @@ namespace Used_TCP
                     //DisconnectFromServer();
                 }
             }       
+        }
+
+        private void draw_btn_Click(object sender, EventArgs e)
+        {
+            string command = server_comand_txt.Text.Trim();
+            string result = CommandProcess(command);
+            if (result.StartsWith("OK") || result.StartsWith("Ок"))
+            {
+                AddtoServerINFO("Локальная команда: ", $"{command} - {result}");
+            }
         }
     }
     public class TClientInfo

@@ -30,6 +30,7 @@
         {
             this.TCP_connect = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.draw_btn = new System.Windows.Forms.Button();
             this.clientChoose = new System.Windows.Forms.ComboBox();
             this.server_comand_txt = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
@@ -73,6 +74,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.draw_btn);
             this.tabPage1.Controls.Add(this.clientChoose);
             this.tabPage1.Controls.Add(this.server_comand_txt);
             this.tabPage1.Controls.Add(this.label8);
@@ -92,6 +94,16 @@
             this.tabPage1.Text = "Сервер";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // draw_btn
+            // 
+            this.draw_btn.Location = new System.Drawing.Point(806, 420);
+            this.draw_btn.Name = "draw_btn";
+            this.draw_btn.Size = new System.Drawing.Size(106, 31);
+            this.draw_btn.TabIndex = 19;
+            this.draw_btn.Text = "Нарисовать";
+            this.draw_btn.UseVisualStyleBackColor = true;
+            this.draw_btn.Click += new System.EventHandler(this.draw_btn_Click);
+            // 
             // clientChoose
             // 
             this.clientChoose.FormattingEnabled = true;
@@ -108,7 +120,6 @@
             // 
             this.server_comand_txt.Location = new System.Drawing.Point(479, 424);
             this.server_comand_txt.Name = "server_comand_txt";
-            this.server_comand_txt.ReadOnly = true;
             this.server_comand_txt.Size = new System.Drawing.Size(310, 22);
             this.server_comand_txt.TabIndex = 17;
             // 
@@ -124,7 +135,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(45, 72);
+            this.label7.Location = new System.Drawing.Point(45, 257);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(95, 16);
             this.label7.TabIndex = 15;
@@ -134,9 +145,9 @@
             // 
             this.server_info_lstbox.FormattingEnabled = true;
             this.server_info_lstbox.ItemHeight = 16;
-            this.server_info_lstbox.Location = new System.Drawing.Point(40, 100);
+            this.server_info_lstbox.Location = new System.Drawing.Point(40, 276);
             this.server_info_lstbox.Name = "server_info_lstbox";
-            this.server_info_lstbox.Size = new System.Drawing.Size(399, 340);
+            this.server_info_lstbox.Size = new System.Drawing.Size(858, 116);
             this.server_info_lstbox.TabIndex = 14;
             // 
             // label4
@@ -150,9 +161,9 @@
             // 
             // sever_pictureBox
             // 
-            this.sever_pictureBox.Location = new System.Drawing.Point(476, 34);
+            this.sever_pictureBox.Location = new System.Drawing.Point(474, 34);
             this.sever_pictureBox.Name = "sever_pictureBox";
-            this.sever_pictureBox.Size = new System.Drawing.Size(424, 368);
+            this.sever_pictureBox.Size = new System.Drawing.Size(424, 236);
             this.sever_pictureBox.TabIndex = 12;
             this.sever_pictureBox.TabStop = false;
             // 
@@ -364,6 +375,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox client_ip_txt;
         private System.Windows.Forms.ComboBox clientChoose;
+        private System.Windows.Forms.Button draw_btn;
     }
 }
 
