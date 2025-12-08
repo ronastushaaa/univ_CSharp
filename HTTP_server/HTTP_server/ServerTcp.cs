@@ -18,7 +18,7 @@ namespace HTTP_server
 
         public void StartServer(int serverPort)
         {
-            Logger.Log("ServerTcp", "Start");
+            //Logger.Log("ServerTcp", "Start");
 
             if (FListener != null)
                 return;
@@ -105,14 +105,16 @@ namespace HTTP_server
                     if (req.IndexOf("\r\n\r\n") >= 0)
                 {
                     HttpRequest r = HttpRequest.TryParse(req);
-                    Logger.Log("ServerTcp", r.Path);
-                    Logger.Log("ServerTcp", r.Method);
-                    Logger.Log("ServerTcp", r.Ver);
+                    Logger.Log("ServerTcp", $"Method: {r.Method}");
+                    Logger.Log("ServerTcp", $"Path: {r.Path}");
+                    Logger.Log("ServerTcp", $"Ver: {r.Ver}");
+                    Logger.Log("ServerTcp", "[HEADERS]");
                     foreach (var item in r.Headers)
                     {
-                        string result = $"Ключ: {item.Key}, Значение: {item.Value}";
+                        string result = $"{item.Key}: {item.Value}";
                         Logger.Log("ServerTcp", result);
                     }
+                    Logger.Log("ServerTcp", "[BODY]");
                 }
             }
             Logger.Log("ServerTcp", "Клиент отключен!");

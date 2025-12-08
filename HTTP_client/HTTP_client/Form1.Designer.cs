@@ -33,22 +33,22 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.server_input_a = new System.Windows.Forms.TextBox();
-            this.server_input_c = new System.Windows.Forms.TextBox();
-            this.server_input_b = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.client_input_a = new System.Windows.Forms.TextBox();
+            this.client_txt_command = new System.Windows.Forms.TextBox();
+            this.client_input_c = new System.Windows.Forms.TextBox();
+            this.client_input_b = new System.Windows.Forms.TextBox();
             this.client_txt_port = new System.Windows.Forms.TextBox();
             this.client_txt_ip = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.client_txt_command = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
-            this.server_output_f = new System.Windows.Forms.TextBox();
-            this.server_output_e = new System.Windows.Forms.TextBox();
-            this.server_output_d = new System.Windows.Forms.TextBox();
+            this.client_output_f = new System.Windows.Forms.TextBox();
+            this.client_output_e = new System.Windows.Forms.TextBox();
+            this.client_output_d = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.client_info_lstbox = new System.Windows.Forms.ListBox();
             this.client_conect_btn = new System.Windows.Forms.Button();
@@ -63,10 +63,10 @@
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.label7);
-            this.groupBox1.Controls.Add(this.server_input_a);
+            this.groupBox1.Controls.Add(this.client_input_a);
             this.groupBox1.Controls.Add(this.client_txt_command);
-            this.groupBox1.Controls.Add(this.server_input_c);
-            this.groupBox1.Controls.Add(this.server_input_b);
+            this.groupBox1.Controls.Add(this.client_input_c);
+            this.groupBox1.Controls.Add(this.client_input_b);
             this.groupBox1.Location = new System.Drawing.Point(29, 79);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(418, 216);
@@ -110,26 +110,42 @@
             this.label3.TabIndex = 8;
             this.label3.Text = "A:";
             // 
-            // server_input_a
+            // label7
             // 
-            this.server_input_a.Location = new System.Drawing.Point(56, 31);
-            this.server_input_a.Name = "server_input_a";
-            this.server_input_a.Size = new System.Drawing.Size(330, 22);
-            this.server_input_a.TabIndex = 4;
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(14, 125);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(67, 16);
+            this.label7.TabIndex = 14;
+            this.label7.Text = "Команда:";
             // 
-            // server_input_c
+            // client_input_a
             // 
-            this.server_input_c.Location = new System.Drawing.Point(56, 87);
-            this.server_input_c.Name = "server_input_c";
-            this.server_input_c.Size = new System.Drawing.Size(330, 22);
-            this.server_input_c.TabIndex = 6;
+            this.client_input_a.Location = new System.Drawing.Point(56, 31);
+            this.client_input_a.Name = "client_input_a";
+            this.client_input_a.Size = new System.Drawing.Size(330, 22);
+            this.client_input_a.TabIndex = 4;
             // 
-            // server_input_b
+            // client_txt_command
             // 
-            this.server_input_b.Location = new System.Drawing.Point(56, 59);
-            this.server_input_b.Name = "server_input_b";
-            this.server_input_b.Size = new System.Drawing.Size(330, 22);
-            this.server_input_b.TabIndex = 5;
+            this.client_txt_command.Location = new System.Drawing.Point(87, 125);
+            this.client_txt_command.Name = "client_txt_command";
+            this.client_txt_command.Size = new System.Drawing.Size(299, 22);
+            this.client_txt_command.TabIndex = 13;
+            // 
+            // client_input_c
+            // 
+            this.client_input_c.Location = new System.Drawing.Point(56, 87);
+            this.client_input_c.Name = "client_input_c";
+            this.client_input_c.Size = new System.Drawing.Size(330, 22);
+            this.client_input_c.TabIndex = 6;
+            // 
+            // client_input_b
+            // 
+            this.client_input_b.Location = new System.Drawing.Point(56, 59);
+            this.client_input_b.Name = "client_input_b";
+            this.client_input_b.Size = new System.Drawing.Size(330, 22);
+            this.client_input_b.TabIndex = 5;
             // 
             // client_txt_port
             // 
@@ -163,30 +179,14 @@
             this.label6.TabIndex = 12;
             this.label6.Text = "IP:";
             // 
-            // client_txt_command
-            // 
-            this.client_txt_command.Location = new System.Drawing.Point(87, 125);
-            this.client_txt_command.Name = "client_txt_command";
-            this.client_txt_command.Size = new System.Drawing.Size(299, 22);
-            this.client_txt_command.TabIndex = 13;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(14, 125);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(67, 16);
-            this.label7.TabIndex = 14;
-            this.label7.Text = "Команда:";
-            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.label8);
             this.groupBox2.Controls.Add(this.label9);
             this.groupBox2.Controls.Add(this.label10);
-            this.groupBox2.Controls.Add(this.server_output_f);
-            this.groupBox2.Controls.Add(this.server_output_e);
-            this.groupBox2.Controls.Add(this.server_output_d);
+            this.groupBox2.Controls.Add(this.client_output_f);
+            this.groupBox2.Controls.Add(this.client_output_e);
+            this.groupBox2.Controls.Add(this.client_output_d);
             this.groupBox2.Location = new System.Drawing.Point(35, 301);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(412, 134);
@@ -221,26 +221,26 @@
             this.label10.TabIndex = 10;
             this.label10.Text = "D:";
             // 
-            // server_output_f
+            // client_output_f
             // 
-            this.server_output_f.Location = new System.Drawing.Point(56, 99);
-            this.server_output_f.Name = "server_output_f";
-            this.server_output_f.Size = new System.Drawing.Size(330, 22);
-            this.server_output_f.TabIndex = 12;
+            this.client_output_f.Location = new System.Drawing.Point(56, 99);
+            this.client_output_f.Name = "client_output_f";
+            this.client_output_f.Size = new System.Drawing.Size(330, 22);
+            this.client_output_f.TabIndex = 12;
             // 
-            // server_output_e
+            // client_output_e
             // 
-            this.server_output_e.Location = new System.Drawing.Point(56, 71);
-            this.server_output_e.Name = "server_output_e";
-            this.server_output_e.Size = new System.Drawing.Size(330, 22);
-            this.server_output_e.TabIndex = 11;
+            this.client_output_e.Location = new System.Drawing.Point(56, 71);
+            this.client_output_e.Name = "client_output_e";
+            this.client_output_e.Size = new System.Drawing.Size(330, 22);
+            this.client_output_e.TabIndex = 11;
             // 
-            // server_output_d
+            // client_output_d
             // 
-            this.server_output_d.Location = new System.Drawing.Point(56, 43);
-            this.server_output_d.Name = "server_output_d";
-            this.server_output_d.Size = new System.Drawing.Size(330, 22);
-            this.server_output_d.TabIndex = 10;
+            this.client_output_d.Location = new System.Drawing.Point(56, 43);
+            this.client_output_d.Name = "client_output_d";
+            this.client_output_d.Size = new System.Drawing.Size(330, 22);
+            this.client_output_d.TabIndex = 10;
             // 
             // label11
             // 
@@ -301,9 +301,9 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox server_input_a;
-        private System.Windows.Forms.TextBox server_input_c;
-        private System.Windows.Forms.TextBox server_input_b;
+        private System.Windows.Forms.TextBox client_input_a;
+        private System.Windows.Forms.TextBox client_input_c;
+        private System.Windows.Forms.TextBox client_input_b;
         private System.Windows.Forms.Button client_btn_send;
         private System.Windows.Forms.TextBox client_txt_port;
         private System.Windows.Forms.TextBox client_txt_ip;
@@ -315,9 +315,9 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.TextBox server_output_f;
-        private System.Windows.Forms.TextBox server_output_e;
-        private System.Windows.Forms.TextBox server_output_d;
+        private System.Windows.Forms.TextBox client_output_f;
+        private System.Windows.Forms.TextBox client_output_e;
+        private System.Windows.Forms.TextBox client_output_d;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ListBox client_info_lstbox;
         private System.Windows.Forms.Button client_conect_btn;

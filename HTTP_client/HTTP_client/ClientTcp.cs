@@ -22,7 +22,7 @@ namespace HTTP_client
 
         public void ConnectToServer(IPAddress ip, int port)
         {
-            if (FClient != null)
+            try
             {
                 FClient = new TcpClient();
                 FClient.Connect(ip, port);
@@ -30,8 +30,13 @@ namespace HTTP_client
                 FClientThread.IsBackground = true;
                 FClientThread.Start();
                 FIsClientConnected = true;
-
+                Logger.Log("ClientTcp", $"Клиент подключился к серверу: {port}");
             }
+            catch (Exception ex)
+            {
+                Logger.Log("ClientTcp", $"Ошибка подключения: {ex.Message}");
+            }
+
         }
 
         public void DisconnectFromServer()
@@ -62,16 +67,44 @@ namespace HTTP_client
                 }
 
                 string receivedMessage = Encoding.ASCII.GetString(message, 0, bytes).Trim();
+                Logger.Log("ClientTcp", receivedMessage);
             }
+            Logger.Log("ClientTcp", "Клиент отключился");
         }
 
-        public void SendMessage(string clientMessage)
+        public void SendRequest(int port, string clientMessage)
         {
             if (FIsClientConnected && !string.IsNullOrEmpty(clientMessage))
             {
-                byte[] messageData = Encoding.ASCII.GetBytes(clientMessage);
-                //FClient.GetStream().Write(messageData, 0, messageData.Length);
+                try
+                {
+                    string httpRequest = HttpRequest(port, clientMessage);
+                    byte[] messageData = Encoding.ASCII.GetBytes(clientMessage);
+                    FClient.GetStream().Write(messageData, 0, messageData.Length);
+                    Logger.Log("ClientTcp", clientMessage);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("ClientTcp", $"Ошибка отправки: {ex.Message}");
+                }
             }
+        }
+
+        private string HttpRequest (int port, string Body)
+        {
+            // Вычисляем Content-Length (байты в UTF-8)
+            //int content = Encoding.UTF8.GetByteCount(Body);
+
+            // Просто собираем строку без StringBuilder
+            string request = $"POST / HTTP/1.1\r\n" + $"Host: localhost:{port}\r\n" + $"Connection: keep-alive\r\n" + $"\r\n" +  $"{Body}";
+
+            return request;
+        }
+
+        public void SendData (int port, string a, string b, string c, string command)
+        {
+            string data = $"A: {a}, B: {b}, C: {c}, Command: {command}";
+            SendRequest(port, data);
         }
     }
 }

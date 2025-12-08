@@ -44,7 +44,7 @@ namespace HTTP_server
             Dictionary<string, string> headers = new Dictionary<string, string>();
             string[] lines = req.Split(new[] {"\r\n"}, StringSplitOptions.None);
 
-            string[] elements = lines[0].Split('/');
+            string[] elements = lines[0].Split(' ');
             string method = elements[0].Trim();
             string path = elements[1].Trim();
             string ver = elements[2].Trim();

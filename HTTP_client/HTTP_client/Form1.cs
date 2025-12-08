@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.LinkLabel;
 
 namespace HTTP_client
 {
@@ -21,6 +22,19 @@ namespace HTTP_client
             InitializeComponent();
             tcpClient = new ClientTcp();
         }
+
+        private void AddtoClientINFO(string who, string msg)
+        {
+            if (client_info_lstbox.InvokeRequired)
+            {
+                client_info_lstbox.Invoke(new Action<string, string>(AddtoClientINFO), who, msg); //создаем экземпляр делегата, который указывает на нашу функцию
+            }
+            else
+            {
+                client_info_lstbox.Items.Add($"{who}: {msg}");
+                client_info_lstbox.SelectedIndex = client_info_lstbox.Items.Count - 1; // опускаемся к последнему сообщению
+            }
+        }
         private void client_conect_btn_Click(object sender, EventArgs e)
         {
             if (!tcpClient.FIsConnected)
@@ -30,58 +44,34 @@ namespace HTTP_client
                 try
                 {
                     ip = IPAddress.Parse(client_txt_ip.Text.Trim());
-                    clientPort = int.Parse(client_txt_port.Text + "\n"); // нужен ли \n
+                    clientPort = int.Parse(client_txt_port.Text.Trim()); // нужен ли \n
                 }
                 catch (Exception)
                 {
                     return;
                 }
-                try
-                {
-                    tcpClient.ConnectToServer(ip, clientPort);
-                    client_conect_btn.Text = "Отключиться";
-                    AddtoClientINFO("", $"Подключено к {ip}:{clientPort}");
-                }
-                catch (Exception)
-                {
-                    AddtoClientINFO("", $"Ошибка подключения");
-                }
+                tcpClient.ConnectToServer(ip, clientPort);
+                client_conect_btn.Text = "Отключиться";
             }
             else
             {
-                try
-                {
-                    tcpClient.DisconnectFromServer();
-                    client_conect_btn.Text = "Подключиться";
-                    AddtoClientINFO("", "Отключено от сервера");
-                }
-                catch (Exception)
-                {
-                    AddtoClientINFO("", $"Ошибка отключения");
-                }
+                tcpClient.DisconnectFromServer();
+                client_conect_btn.Text = "Подключиться";
 
             }
         }
 
         private void client_send_btn_Click(object sender, EventArgs e)
         {
+            string a = client_input_a.Text;
+            string b = client_input_b.Text;
+            string c = client_input_c.Text;
+            string command = client_txt_command.Text;
+            int clientPort = int.Parse(client_txt_port.Text);
+            tcpClient.SendData(clientPort, a, b, c, command);
             //string clientMessage = client_message_txt.Text + "\n";
-           // SendMessage(clientMessage);
-           // client_message_txt.Clear();
-        }
-
-
-        private void AddtoClientINFO(string who, string clientMessage)
-        {
-            if (client_info_lstbox.InvokeRequired)
-            {
-                client_info_lstbox.Invoke(new Action<string, string>(AddtoClientINFO), who, clientMessage); //создаем экземпляр делегата, который указывает на нашу функцию
-            }
-            else
-            {
-                client_info_lstbox.Items.Add($"{DateTime.Now:HH:mm:ss} - {who}{clientMessage}");
-                client_info_lstbox.SelectedIndex = client_info_lstbox.Items.Count - 1; // опускаемся к последнему сообщению
-            }
+            SendMessage(clientMessage);
+            // client_message_txt.Clear();
         }
 
     }

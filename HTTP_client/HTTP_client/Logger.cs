@@ -11,7 +11,7 @@ namespace HTTP_client
         public static event Action<string, string> OnLog;
         public static void Log(string who, string msg)
         {
-            OnLog?.Invoke(who, $"{DateTime.Now:HH:mm:ss} — {msg}");
+            OnLog?.Invoke(who, $"{DateTime.Now:HH:mm:ss}  {msg}");
         }
     }
 }
