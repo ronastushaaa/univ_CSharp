@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,15 +41,25 @@ namespace HTTP_server
         {
             //string method = "";
             //string path = "";
-            string ver = "";
             Dictionary<string, string> headers = new Dictionary<string, string>();
+            string[] lines = req.Split(new[] {"\r\n"}, StringSplitOptions.None);
 
-
-            string[] elements = req.Split('/');
+            string[] elements = lines[0].Split('/');
             string method = elements[0].Trim();
-            string general = elements[elements.Length - 1].Trim();
-            string path = string.Join("/", elements, 1, elements.Length - 2).Trim();
-            if (!string.IsNullOrEmpty(general))
+            string path = elements[1].Trim();
+            string ver = elements[2].Trim();
+            //string path = string.Join("/", elements, 1, elements.Length - 2).Trim();
+            for (int i = 1; i < lines.Length; i++)
+            {
+                int index = lines[i].IndexOf(':');
+                if (index > 0)
+                {
+                    string key = lines[i].Substring(0, index).Trim();
+                    string value = lines[i].Substring(index + 1).Trim();
+                    headers[key] = value;
+                }
+            }
+            /*if (!string.IsNullOrEmpty(general))
             {
                 int i = general.IndexOf("\r\n");
                 if (i >= 0)
@@ -64,9 +75,9 @@ namespace HTTP_server
                         headers.Add(key, value);
                     }
                 }
-            }
+            }*/
             HttpRequest r = new HttpRequest(method, path, ver, headers);
-
+            return r;
         }
        
     }

@@ -97,11 +97,22 @@ namespace HTTP_server
                 }
                 req += Encoding.ASCII.GetString(tmp_buf, 0, bytes);
                 Logger.Log("ServerTcp", req);
+                lock (Console.Out)
+                {
+                    Console.WriteLine(req);
 
-                if (req.IndexOf("\r\n\r\n") >= 0)
+                }
+                    if (req.IndexOf("\r\n\r\n") >= 0)
                 {
                     HttpRequest r = HttpRequest.TryParse(req);
                     Logger.Log("ServerTcp", r.Path);
+                    Logger.Log("ServerTcp", r.Method);
+                    Logger.Log("ServerTcp", r.Ver);
+                    foreach (var item in r.Headers)
+                    {
+                        string result = $"Ключ: {item.Key}, Значение: {item.Value}";
+                        Logger.Log("ServerTcp", result);
+                    }
                 }
             }
             Logger.Log("ServerTcp", "Клиент отключен!");
