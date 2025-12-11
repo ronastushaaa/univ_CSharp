@@ -17,20 +17,30 @@ namespace HTTP_server
         private Dictionary <string, string> FHeaders;
         private string FJsonBody;
 
-        private HttpRequest(string method, string path, string ver, Dictionary <string, string> headers, string jsonBody) 
+        private string FValue1;
+        private string FValue2;
+        private string FValue3;
+
+        private HttpRequest(string method, string path, string ver, Dictionary <string, string> headers, string jsonBody, string a, string b, string c) 
         {
             FMethod = method;
             FPath = path;
             FVer = ver;
             FHeaders = headers;
             FJsonBody = jsonBody;
-        }
+            FValue1 = a;
+            FValue2 = b;
+            FValue3 = c;
+    }
 
         public string Method { get { return FMethod; } }
         public string Path { get { return FPath; } }
         public string Ver { get { return FVer; } }
         public Dictionary<string, string> Headers { get { return FHeaders; } }
         public string JsonBody { get { return FJsonBody; } }
+        public string A { get { return FValue1; } }
+        public string B { get { return FValue2; } }
+        public string C { get { return FValue3; } }
 
 
 
@@ -43,8 +53,6 @@ namespace HTTP_server
 
         public static HttpRequest TryParse(string req)
         {
-            //string method = "";
-            //string path = "";
             Dictionary<string, string> headers = new Dictionary<string, string>();
             string[] lines = req.Split(new[] {"\r\n"}, StringSplitOptions.None);
 
@@ -69,26 +77,38 @@ namespace HTTP_server
             {
                 body = req.Substring(bodyIndex + 4).Trim();
             }
-            string jsonBody = Encoding.ASCII.GetString(Convert.FromBase64String(body)); ;
-
-            /*if (!string.IsNullOrEmpty(general))
+            string jsonBody = Encoding.ASCII.GetString(Convert.FromBase64String(body));
+            string v1 = "";
+            string v2 = "";
+            string v3 = "";
+            int aStart = jsonBody.IndexOf("\"A\":\"") + 5;  
+            if (aStart > 5)
             {
-                int i = general.IndexOf("\r\n");
-                if (i >= 0)
+                int aEnd = jsonBody.IndexOf('"', aStart);
+                if (aEnd > aStart)
                 {
-                    ver = general.Substring(0, i).Trim();
-                    string headers_split = general.Substring(i + 2);
-                    string[] headerLines = headers_split.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-                    for (int j = 0;  j< headerLines.Length; j++)
-                    {
-                        string[] c = headerLines[j].Split(':');
-                        string key = c[0].Trim();
-                        string value = c[1].Trim();
-                        headers.Add(key, value);
-                    }
+                    v1 = jsonBody.Substring(aStart, aEnd - aStart);
                 }
-            }*/
-            HttpRequest r = new HttpRequest(method, path, ver, headers, jsonBody);
+            }
+            int bStart = jsonBody.IndexOf("\"B\":\"") + 5;
+            if (bStart > 5)
+            {
+                int bEnd = jsonBody.IndexOf('"', bStart);
+                if (bEnd > bStart)
+                {
+                    v2 = jsonBody.Substring(bStart, bEnd - bStart);
+                }
+            }
+            int cStart = jsonBody.IndexOf("\"C\":\"") + 5;
+            if (cStart > 5)
+            {
+                int cEnd = jsonBody.IndexOf('"', cStart);
+                if (cEnd > cStart)
+                {
+                    v3 = jsonBody.Substring(cStart, cEnd - cStart);
+                }
+            }
+            HttpRequest r = new HttpRequest(method, path, ver, headers, jsonBody, v1, v2, v3);
             return r;
         }
     }

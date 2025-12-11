@@ -22,6 +22,7 @@ namespace HTTP_server
             InitializeComponent();
             tcpServer = null;
             Logger.OnLog += ShowLogInfo;
+            Logger.InfoLog += ShowInfo;
             server_port_txt.Text = "8080";
         }
 
@@ -35,6 +36,19 @@ namespace HTTP_server
             {
                 server_info_lstbox.Items.Add($"{who}: {msg}");
                 server_info_lstbox.SelectedIndex = server_info_lstbox.Items.Count - 1;
+            }
+        }
+        private void ShowInfo(string A, string B, string C)
+        {
+            if (server_output_a.InvokeRequired)
+            {
+                server_output_a.Invoke(new Action<string, string, string>(ShowInfo), A, B, C);
+            }
+            else
+            {
+                server_output_a.Text = A;
+                server_output_b.Text = B;
+                server_output_c.Text = C;
             }
         }
         private void server_start_btn_Click(object sender, EventArgs e)

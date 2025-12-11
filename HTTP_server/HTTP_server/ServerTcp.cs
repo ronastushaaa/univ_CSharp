@@ -11,6 +11,7 @@ namespace HTTP_server
 {
     internal class ServerTcp
     {
+        static private string LOG_ID = "ServerTcp";
         private TcpListener FListener;
         private Thread FListenerThread;
         private bool FIsServerRunning = false;
@@ -29,11 +30,11 @@ namespace HTTP_server
                 FListenerThread.IsBackground = true;
                 FListenerThread.Start();
                 FIsServerRunning = true;
-                Logger.Log("ServerTcp", $"Сервер запущен на порту: {serverPort}"); 
+                Logger.Log(LOG_ID, $"Сервер запущен на порту: {serverPort}"); 
             }
             catch (Exception)
             {
-                Logger.Log("ServerTcp", "Ошибка запуска сервера!");
+                Logger.Log(LOG_ID, "Ошибка запуска сервера!");
             }
         }
 
@@ -49,10 +50,10 @@ namespace HTTP_server
                 }
                 catch
                 {
-                    Logger.Log("ServerTcp", "Ошибка остановки сервера!");
+                    Logger.Log(LOG_ID, "Ошибка остановки сервера!");
                 }
             }
-            Logger.Log("ServerTcp", "Сервер остановлен!");
+            Logger.Log(LOG_ID, "Сервер остановлен!");
         }
 
         private void ReceiveConnect()
@@ -60,17 +61,17 @@ namespace HTTP_server
             try
             {
                 FListener.Start();
-                Logger.Log("ServerTcp", "Сервер начал прослушивание!");
+                Logger.Log(LOG_ID, "Сервер начал прослушивание!");
                 while (FIsServerRunning)
                 {
                     TcpClient client = FListener.AcceptTcpClient(); // Получаем входящие подключение
-                    Logger.Log("ServerTcp", $"Клиент подключен {client.Client.RemoteEndPoint}");
+                    Logger.Log(LOG_ID, $"Клиент подключен {client.Client.RemoteEndPoint}");
                     HandleClientData(client);
                 }
             }
             catch (Exception ex)
             {
-                Logger.Log("ServerTcp", $"Ошибка сервера: {ex.Message}");
+                Logger.Log(LOG_ID, $"Ошибка сервера: {ex.Message}");
             }
         }
 
@@ -96,24 +97,26 @@ namespace HTTP_server
                     break;
                 }
                 req += Encoding.ASCII.GetString(tmp_buf, 0, bytes);
-                Logger.Log("ServerTcp", "RCV: "+ req);
+                Logger.Log(LOG_ID, "RCV: "+ req);
                 if (req.IndexOf("\r\n\r\n") >= 0)
                 {
                     HttpRequest r = HttpRequest.TryParse(req);
-                    Logger.Log("ServerTcp", $"Method: {r.Method}");
-                    Logger.Log("ServerTcp", $"Path: {r.Path}");
-                    Logger.Log("ServerTcp", $"Ver: {r.Ver}");
-                    Logger.Log("ServerTcp", "[HEADERS]");
+                    Logger.Log(LOG_ID, $"Method: {r.Method}");
+                    Logger.Log(LOG_ID, $"Path: {r.Path}");
+                    Logger.Log(LOG_ID, $"Ver: {r.Ver}");
+                    Logger.Log(LOG_ID, "[HEADERS]");
                     foreach (var item in r.Headers)
                     {
                         string result = $"{item.Key}: {item.Value}";
-                        Logger.Log("ServerTcp", result);
+                        Logger.Log(LOG_ID, result);
                     }
-                    Logger.Log("ServerTcp", "[BODY]");
-                    Logger.Log("ServerTcp", $"Body: {r.JsonBody}");
+                    Logger.Log(LOG_ID, "[BODY]");
+                    Logger.Log(LOG_ID, $"{r.JsonBody}");
+                    Logger.Log_2(r.A, r.B, r.C);
                 }
+                req = "";
             }
-            Logger.Log("ServerTcp", "Клиент отключен!");
+            Logger.Log(LOG_ID, "Клиент отключен!");
             client.Close();
         }
     }
