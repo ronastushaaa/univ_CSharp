@@ -21,13 +21,16 @@ namespace HTTP_client
         {
             InitializeComponent();
             tcpClient = new ClientTcp();
+            Logger.OnLog += ShowLogInfo;
+            client_txt_port.Text = "8080";
+            client_txt_port.Text = "127.0.0.1";
         }
 
-        private void AddtoClientINFO(string who, string msg)
+        private void ShowLogInfo(string who, string msg)
         {
             if (client_info_lstbox.InvokeRequired)
             {
-                client_info_lstbox.Invoke(new Action<string, string>(AddtoClientINFO), who, msg); //создаем экземпляр делегата, который указывает на нашу функцию
+                client_info_lstbox.Invoke(new Action<string, string>(ShowLogInfo), who, msg); //создаем экземпляр делегата, который указывает на нашу функцию
             }
             else
             {
@@ -66,11 +69,13 @@ namespace HTTP_client
             string a = client_input_a.Text;
             string b = client_input_b.Text;
             string c = client_input_c.Text;
-            string command = client_txt_command.Text;
-            int clientPort = int.Parse(client_txt_port.Text);
-            tcpClient.SendData(clientPort, a, b, c, command);
+            Dictionary<string, string> map = new Dictionary<string, string>();
+            map.Add("A", a);
+            map.Add("B", b);
+            map.Add("C", c);
+            tcpClient.SendData(map);
             //string clientMessage = client_message_txt.Text + "\n";
-            SendMessage(clientMessage);
+            //SendMessage(clientMessage);
             // client_message_txt.Clear();
         }
 

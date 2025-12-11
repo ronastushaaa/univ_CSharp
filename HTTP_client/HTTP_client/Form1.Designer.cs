@@ -33,9 +33,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
             this.client_input_a = new System.Windows.Forms.TextBox();
-            this.client_txt_command = new System.Windows.Forms.TextBox();
             this.client_input_c = new System.Windows.Forms.TextBox();
             this.client_input_b = new System.Windows.Forms.TextBox();
             this.client_txt_port = new System.Windows.Forms.TextBox();
@@ -62,26 +60,25 @@
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.client_input_a);
-            this.groupBox1.Controls.Add(this.client_txt_command);
             this.groupBox1.Controls.Add(this.client_input_c);
             this.groupBox1.Controls.Add(this.client_input_b);
             this.groupBox1.Location = new System.Drawing.Point(29, 79);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(418, 216);
+            this.groupBox1.Size = new System.Drawing.Size(418, 185);
             this.groupBox1.TabIndex = 8;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Данные для отправки:";
             // 
             // client_btn_send
             // 
-            this.client_btn_send.Location = new System.Drawing.Point(287, 163);
+            this.client_btn_send.Location = new System.Drawing.Point(287, 125);
             this.client_btn_send.Name = "client_btn_send";
             this.client_btn_send.Size = new System.Drawing.Size(99, 38);
             this.client_btn_send.TabIndex = 13;
             this.client_btn_send.Text = "Отправить";
             this.client_btn_send.UseVisualStyleBackColor = true;
+            this.client_btn_send.Click += new System.EventHandler(this.client_send_btn_Click);
             // 
             // label5
             // 
@@ -110,28 +107,12 @@
             this.label3.TabIndex = 8;
             this.label3.Text = "A:";
             // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(14, 125);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(67, 16);
-            this.label7.TabIndex = 14;
-            this.label7.Text = "Команда:";
-            // 
             // client_input_a
             // 
             this.client_input_a.Location = new System.Drawing.Point(56, 31);
             this.client_input_a.Name = "client_input_a";
             this.client_input_a.Size = new System.Drawing.Size(330, 22);
             this.client_input_a.TabIndex = 4;
-            // 
-            // client_txt_command
-            // 
-            this.client_txt_command.Location = new System.Drawing.Point(87, 125);
-            this.client_txt_command.Name = "client_txt_command";
-            this.client_txt_command.Size = new System.Drawing.Size(299, 22);
-            this.client_txt_command.TabIndex = 13;
             // 
             // client_input_c
             // 
@@ -309,8 +290,6 @@
         private System.Windows.Forms.TextBox client_txt_ip;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox client_txt_command;
-        private System.Windows.Forms.Label label7;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;

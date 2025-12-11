@@ -15,6 +15,8 @@ namespace HTTP_client
         private Thread FClientThread;
         private NetworkStream FClientStream;
         private bool FIsClientConnected = false;
+        private int FClientPort;
+        private IPAddress FClientIp;
         public bool FIsConnected
         {
             get { return FIsClientConnected; }
@@ -22,6 +24,8 @@ namespace HTTP_client
 
         public void ConnectToServer(IPAddress ip, int port)
         {
+            FClientPort = port;
+            FClientIp = ip;
             try
             {
                 FClient = new TcpClient();
@@ -72,16 +76,16 @@ namespace HTTP_client
             Logger.Log("ClientTcp", "Клиент отключился");
         }
 
-        public void SendRequest(int port, string clientMessage)
+        public void SendRequest(string clientMessage)
         {
             if (FIsClientConnected && !string.IsNullOrEmpty(clientMessage))
             {
                 try
                 {
-                    string httpRequest = HttpRequest(port, clientMessage);
-                    byte[] messageData = Encoding.ASCII.GetBytes(clientMessage);
+                    string httpRequest = HttpRequest(clientMessage);
+                    byte[] messageData = Encoding.ASCII.GetBytes(httpRequest);
                     FClient.GetStream().Write(messageData, 0, messageData.Length);
-                    Logger.Log("ClientTcp", clientMessage);
+                    Logger.Log("ClientTcp", "Отправлен HTTP-запрос:\n" + httpRequest);
                 }
                 catch (Exception ex)
                 {
@@ -90,21 +94,65 @@ namespace HTTP_client
             }
         }
 
-        private string HttpRequest (int port, string Body)
+        private string HttpRequest (string Body)
         {
-            // Вычисляем Content-Length (байты в UTF-8)
-            //int content = Encoding.UTF8.GetByteCount(Body);
-
-            // Просто собираем строку без StringBuilder
-            string request = $"POST / HTTP/1.1\r\n" + $"Host: localhost:{port}\r\n" + $"Connection: keep-alive\r\n" + $"\r\n" +  $"{Body}";
-
+            int content = Encoding.ASCII.GetByteCount(Body);
+            string request = $"POST / HTTP/1.1\r\n" 
+                           + $"Host: {FClientIp}:{FClientPort}\r\n"
+                           + $"Content-Length: {content}\r\n"
+                           + $"Connection: keep-alive\r\n"
+                           + $"\r\n" 
+                           +  $"{Body}";
             return request;
         }
 
-        public void SendData (int port, string a, string b, string c, string command)
+        public void SendData (Dictionary<string, string> map)
         {
-            string data = $"A: {a}, B: {b}, C: {c}, Command: {command}";
-            SendRequest(port, data);
+            if (map == null || map.Count == 0 || !FIsClientConnected)   
+            {
+                Logger.Log("ClientTcp", "Нет данных для отправки");
+                return;
+            }
+            try
+            {
+                string json = ConvertToJson(map);
+                string base64 = Convert.ToBase64String(Encoding.ASCII.GetBytes(json));
+                SendRequest(base64);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("ClientTcp", $"Ошибка отправки: {ex.Message}");
+            }
+        }
+
+        private string ConvertToJson(Dictionary <string, string> map)
+        {
+            if (map == null || map.Count == 0)
+            {
+                return "{}";
+            }
+            string json = "{";
+            bool isComma = true;
+            foreach (var i in map)
+            {
+                if (!isComma)
+                {
+                    json += ",";
+                }
+                isComma = false;
+                json += "\"" + EscapeJson(i.Key) + "\":\"" + EscapeJson(i.Value) + "\"";
+            }
+            json += "}";
+            return json;
+        }
+
+        private string EscapeJson(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+            { 
+                return "";
+            }
+            return s.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n").Replace("\r", "\\r");
         }
     }
 }
