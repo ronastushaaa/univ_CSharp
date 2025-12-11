@@ -96,13 +96,8 @@ namespace HTTP_server
                     break;
                 }
                 req += Encoding.ASCII.GetString(tmp_buf, 0, bytes);
-                Logger.Log("ServerTcp", req);
-                lock (Console.Out)
-                {
-                    Console.WriteLine(req);
-
-                }
-                    if (req.IndexOf("\r\n\r\n") >= 0)
+                Logger.Log("ServerTcp", "RCV: "+ req);
+                if (req.IndexOf("\r\n\r\n") >= 0)
                 {
                     HttpRequest r = HttpRequest.TryParse(req);
                     Logger.Log("ServerTcp", $"Method: {r.Method}");
