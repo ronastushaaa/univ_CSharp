@@ -35,11 +35,11 @@ namespace HTTP_client
                 FClientThread.IsBackground = true;
                 FClientThread.Start();
                 FIsClientConnected = true;
-                Logger.Log("ClientTcp", $"Клиент подключился к серверу: {port}");
+                Logger.Log(LOG_ID, $"Клиент подключился к серверу: {port}");
             }
             catch (Exception ex)
             {
-                Logger.Log("ClientTcp", $"Ошибка подключения: {ex.Message}");
+                Logger.Log(LOG_ID, $"Ошибка подключения: {ex.Message}");
             }
 
         }
@@ -72,9 +72,9 @@ namespace HTTP_client
                 }
 
                 string receivedMessage = Encoding.ASCII.GetString(message, 0, bytes).Trim();
-                Logger.Log("ClientTcp", receivedMessage);
+                Logger.Log(LOG_ID, receivedMessage);
             }
-            Logger.Log("ClientTcp", "Клиент отключился");
+            Logger.Log(LOG_ID, "Клиент отключился");
         }
 
         public void SendRequest(string clientMessage)
@@ -86,11 +86,11 @@ namespace HTTP_client
                     string httpRequest = HttpRequest(clientMessage);
                     byte[] messageData = Encoding.ASCII.GetBytes(httpRequest);
                     FClient.GetStream().Write(messageData, 0, messageData.Length);
-                    Logger.Log("ClientTcp", "Отправлен HTTP-запрос:\n" + httpRequest);
+                    Logger.Log(LOG_ID, "Отправлен HTTP-запрос:\n" + httpRequest);
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log("ClientTcp", $"Ошибка отправки: {ex.Message}");
+                    Logger.Log(LOG_ID, $"Ошибка отправки: {ex.Message}");
                 }
             }
         }
@@ -111,7 +111,7 @@ namespace HTTP_client
         {
             if (map == null || map.Count == 0 || !FIsClientConnected)   
             {
-                Logger.Log("ClientTcp", "Нет данных для отправки");
+                Logger.Log(LOG_ID, "Нет данных для отправки");
                 return;
             }
             try
@@ -124,7 +124,7 @@ namespace HTTP_client
             }
             catch (Exception ex)
             {
-                Logger.Log("ClientTcp", $"Ошибка отправки: {ex.Message}");
+                Logger.Log(LOG_ID, $"Ошибка отправки: {ex.Message}");
             }
         }
 
