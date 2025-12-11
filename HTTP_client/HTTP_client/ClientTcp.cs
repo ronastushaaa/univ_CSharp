@@ -11,6 +11,7 @@ namespace HTTP_client
 {
     internal class ClientTcp
     {
+        static private string LOG_ID = "ClientTcp";
         private TcpClient FClient;
         private Thread FClientThread;
         private NetworkStream FClientStream;
@@ -93,7 +94,7 @@ namespace HTTP_client
                 }
             }
         }
-
+        // зафиксируй в гит! ау
         private string HttpRequest (string Body)
         {
             int content = Encoding.ASCII.GetByteCount(Body);
@@ -106,7 +107,7 @@ namespace HTTP_client
             return request;
         }
 
-        public void SendData (Dictionary<string, string> map)
+        public void SendData(Dictionary<string, string> map)
         {
             if (map == null || map.Count == 0 || !FIsClientConnected)   
             {
@@ -116,7 +117,9 @@ namespace HTTP_client
             try
             {
                 string json = ConvertToJson(map);
+                Logger.Log(LOG_ID, $"JSON: {json}");
                 string base64 = Convert.ToBase64String(Encoding.ASCII.GetBytes(json));
+                Logger.Log(LOG_ID, $"Base64: {base64}");
                 SendRequest(base64);
             }
             catch (Exception ex)
