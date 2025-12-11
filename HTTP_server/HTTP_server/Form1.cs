@@ -22,6 +22,7 @@ namespace HTTP_server
             InitializeComponent();
             tcpServer = null;
             Logger.OnLog += ShowLogInfo;
+            server_port_txt.Text = "8080";
         }
 
         private void ShowLogInfo(string who, string msg)

@@ -15,19 +15,23 @@ namespace HTTP_server
         private string FPath;
         private string FVer;
         private Dictionary <string, string> FHeaders;
+        private string FJsonBody;
 
-        private HttpRequest(string method, string path, string ver, Dictionary <string, string> headers)
+        private HttpRequest(string method, string path, string ver, Dictionary <string, string> headers, string jsonBody) 
         {
             FMethod = method;
             FPath = path;
             FVer = ver;
             FHeaders = headers;
+            FJsonBody = jsonBody;
         }
 
         public string Method { get { return FMethod; } }
         public string Path { get { return FPath; } }
         public string Ver { get { return FVer; } }
         public Dictionary<string, string> Headers { get { return FHeaders; } }
+        public string JsonBody { get { return FJsonBody; } }
+
 
 
         public string searchBody(string req)
@@ -59,6 +63,14 @@ namespace HTTP_server
                     headers[key] = value;
                 }
             }
+            string body = "";
+            int bodyIndex = req.IndexOf("\r\n\r\n");
+            if (bodyIndex >= 0)
+            {
+                body = req.Substring(bodyIndex + 4).Trim();
+            }
+            string jsonBody = Encoding.ASCII.GetString(Convert.FromBase64String(body)); ;
+
             /*if (!string.IsNullOrEmpty(general))
             {
                 int i = general.IndexOf("\r\n");
@@ -76,9 +88,8 @@ namespace HTTP_server
                     }
                 }
             }*/
-            HttpRequest r = new HttpRequest(method, path, ver, headers);
+            HttpRequest r = new HttpRequest(method, path, ver, headers, jsonBody);
             return r;
         }
-       
     }
 }

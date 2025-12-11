@@ -110,6 +110,7 @@ namespace HTTP_server
                         Logger.Log("ServerTcp", result);
                     }
                     Logger.Log("ServerTcp", "[BODY]");
+                    Logger.Log("ServerTcp", $"Body: {r.JsonBody}");
                 }
             }
             Logger.Log("ServerTcp", "Клиент отключен!");
