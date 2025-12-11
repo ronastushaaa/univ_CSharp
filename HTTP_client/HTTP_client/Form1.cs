@@ -23,7 +23,7 @@ namespace HTTP_client
             tcpClient = new ClientTcp();
             Logger.OnLog += ShowLogInfo;
             client_txt_port.Text = "8080";
-            client_txt_port.Text = "127.0.0.1";
+            client_txt_ip.Text = "127.0.0.1";
         }
 
         private void ShowLogInfo(string who, string msg)
