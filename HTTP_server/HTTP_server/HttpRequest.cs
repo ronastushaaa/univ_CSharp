@@ -10,7 +10,7 @@ namespace HTTP_server
 {
     public class HttpRequest
     {
-        private string FRaw;
+        //private string FRaw;
         private string FMethod;
         private string FPath;
         private string FVer;

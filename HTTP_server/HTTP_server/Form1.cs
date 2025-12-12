@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Net.Http;
 
 
 namespace HTTP_server
@@ -23,7 +24,11 @@ namespace HTTP_server
             tcpServer = null;
             Logger.OnLog += ShowLogInfo;
             Logger.InfoLog += ShowInfo;
+            Logger.DEFRequested += GetDEF;
             server_port_txt.Text = "8080";
+            server_input_d.Text = "Hello";
+            server_input_e.Text = "world";
+            server_input_f.Text = "!";
         }
 
         private void ShowLogInfo(string who, string msg)
@@ -49,6 +54,19 @@ namespace HTTP_server
                 server_output_a.Text = A;
                 server_output_b.Text = B;
                 server_output_c.Text = C;
+            }
+        }
+
+        private Dictionary<string, string> GetDEF()
+        {
+            if (this.InvokeRequired)
+            {
+                return (Dictionary<string, string>)this.Invoke(new Func<Dictionary<string, string>>(GetDEF));
+            }
+
+            else
+            {
+                return new Dictionary<string, string> {["D"] = server_input_d.Text ,["E"] = server_input_e.Text, ["F"] = server_input_f.Text};
             }
         }
         private void server_start_btn_Click(object sender, EventArgs e)
@@ -77,6 +95,20 @@ namespace HTTP_server
             }
         }
 
+        /*private void server_send_btn_Click(object sender, EventArgs e)
+        {
+            string D = server_input_d.Text;
+            string E = server_input_e.Text;
+            string F = server_input_f.Text;
+            Dictionary<string, string> map = new Dictionary<string, string>();
+            map.Add("D", D);
+            map.Add("E", E);
+            map.Add("F", F);
+            tcpServer.SendResponse(map);
+            //string clientMessage = client_message_txt.Text + "\n";
+            //SendMessage(clientMessage);
+            // client_message_txt.Clear();
+        }*/
 
     }
 }

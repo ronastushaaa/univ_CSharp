@@ -106,7 +106,7 @@
             this.groupBox1.Controls.Add(this.server_output_a);
             this.groupBox1.Controls.Add(this.server_output_c);
             this.groupBox1.Controls.Add(this.server_output_b);
-            this.groupBox1.Location = new System.Drawing.Point(33, 214);
+            this.groupBox1.Location = new System.Drawing.Point(33, 230);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(412, 149);
             this.groupBox1.TabIndex = 7;
@@ -150,7 +150,7 @@
             this.groupBox2.Controls.Add(this.server_input_d);
             this.groupBox2.Location = new System.Drawing.Point(33, 55);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(412, 143);
+            this.groupBox2.Size = new System.Drawing.Size(412, 148);
             this.groupBox2.TabIndex = 8;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Данные для отправки:";
@@ -208,15 +208,15 @@
             this.server_info_lstbox.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.server_info_lstbox.FormattingEnabled = true;
             this.server_info_lstbox.ItemHeight = 16;
-            this.server_info_lstbox.Location = new System.Drawing.Point(0, 417);
+            this.server_info_lstbox.Location = new System.Drawing.Point(0, 434);
             this.server_info_lstbox.Name = "server_info_lstbox";
-            this.server_info_lstbox.Size = new System.Drawing.Size(501, 180);
+            this.server_info_lstbox.Size = new System.Drawing.Size(501, 212);
             this.server_info_lstbox.TabIndex = 9;
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(21, 391);
+            this.label9.Location = new System.Drawing.Point(12, 395);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(157, 16);
             this.label9.TabIndex = 10;
@@ -226,7 +226,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(501, 597);
+            this.ClientSize = new System.Drawing.Size(501, 646);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.server_info_lstbox);
             this.Controls.Add(this.groupBox2);

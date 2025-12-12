@@ -16,6 +16,8 @@ namespace HTTP_server
         private Thread FListenerThread;
         private bool FIsServerRunning = false;
 
+        private TcpClient FClient;
+
 
         public void StartServer(int serverPort)
         {
@@ -113,11 +115,58 @@ namespace HTTP_server
                     Logger.Log(LOG_ID, "[BODY]");
                     Logger.Log(LOG_ID, $"{r.JsonBody}");
                     Logger.Log_2(r.A, r.B, r.C);
+                    Dictionary<string, string> map = Logger.GetMap();
+                    SendResponse(client, map);
                 }
                 req = "";
             }
             Logger.Log(LOG_ID, "Клиент отключен!");
             client.Close();
         }
+
+        public void SendResponse(TcpClient client, Dictionary<string, string> map)
+        {
+            string json = ConvertToJson(map);
+            string base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
+            string response = "HTTP/1.1 200 OK\r\n" 
+                + "Content-Type: application/json\r\n" 
+                + "Connection: keep-alive\r\n"
+                + "\r\n" 
+                + base64;
+            byte[] data = Encoding.UTF8.GetBytes(response);
+            client.GetStream().Write(data, 0, data.Length);
+            Logger.Log(LOG_ID, $"Ответ отправлен: {json}");
+        }
+
+        private string ConvertToJson(Dictionary<string, string> map)
+        {
+            if (map == null || map.Count == 0)
+            {
+                return "{}";
+            }
+            string json = "{";
+            bool isComma = true;
+            foreach (var i in map)
+            {
+                if (!isComma)
+                {
+                    json += ",";
+                }
+                isComma = false;
+                json += "\"" + EscapeJson(i.Key) + "\":\"" + EscapeJson(i.Value) + "\"";
+            }
+            json += "}";
+            return json;
+        }
+
+        private string EscapeJson(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+            {
+                return "";
+            }
+            return s.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n").Replace("\r", "\\r");
+        }
+
     }
 }
