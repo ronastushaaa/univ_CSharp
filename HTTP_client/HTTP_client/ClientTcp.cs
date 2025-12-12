@@ -71,8 +71,25 @@ namespace HTTP_client
                     break;
                 }
 
-                string receivedMessage = Encoding.ASCII.GetString(message, 0, bytes).Trim();
-                Logger.Log(LOG_ID, receivedMessage);
+                string req = Encoding.ASCII.GetString(message, 0, bytes).Trim();
+                Logger.Log(LOG_ID, "RCV: " + req);
+                if (req.IndexOf("\r\n\r\n") >= 0)
+                {
+                    HttpRequest r = HttpRequest.TryParse(req);
+                    Logger.Log(LOG_ID, $"Version: {r.Version}");
+                    Logger.Log(LOG_ID, $"Status: {r.Status}");
+                    Logger.Log(LOG_ID, $"Status Message: {r.StatusMessage}");
+                    Logger.Log(LOG_ID, "[HEADERS]");
+                    foreach (var item in r.Headers)
+                    {
+                        string result = $"{item.Key}: {item.Value}";
+                        Logger.Log(LOG_ID, result);
+                    }
+                    Logger.Log(LOG_ID, "[BODY]");
+                    Logger.Log(LOG_ID, $"{r.JsonBody}");
+                    Logger.Log_2(r.D, r.E, r.F);
+                }
+                req = "";
             }
             Logger.Log(LOG_ID, "Клиент отключился");
         }
@@ -83,8 +100,8 @@ namespace HTTP_client
             {
                 try
                 {
-                    string httpRequest = HttpRequest(clientMessage);
-                    byte[] messageData = Encoding.ASCII.GetBytes(httpRequest);
+                    string httpRequest = HRequest(clientMessage);
+                    byte[] messageData = Encoding.UTF8.GetBytes(httpRequest);
                     FClient.GetStream().Write(messageData, 0, messageData.Length);
                     Logger.Log(LOG_ID, "Отправлен HTTP-запрос:\n" + httpRequest);
                 }
@@ -95,7 +112,7 @@ namespace HTTP_client
             }
         }
         // зафиксируй в гит! ау
-        private string HttpRequest (string Body)
+        private string HRequest (string Body)
         {
             int content = Encoding.ASCII.GetByteCount(Body);
             string request = $"POST / HTTP/1.1\r\n" 
@@ -139,7 +156,7 @@ namespace HTTP_client
             foreach (var i in map)
             {
                 if (!isComma)
-                {
+                {   
                     json += ",";
                 }
                 isComma = false;

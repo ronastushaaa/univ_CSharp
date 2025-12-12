@@ -22,6 +22,7 @@ namespace HTTP_client
             InitializeComponent();
             tcpClient = new ClientTcp();
             Logger.OnLog += ShowLogInfo;
+            Logger.InfoLog += ShowInfo;
             client_txt_port.Text = "8080";
             client_txt_ip.Text = "127.0.0.1";
         }
@@ -36,6 +37,20 @@ namespace HTTP_client
             {
                 client_info_lstbox.Items.Add($"{who}: {msg}");
                 client_info_lstbox.SelectedIndex = client_info_lstbox.Items.Count - 1; // опускаемся к последнему сообщению
+            }
+        }
+
+        private void ShowInfo(string D, string E, string F)
+        {
+            if (client_output_d.InvokeRequired)
+            {
+                client_output_d.Invoke(new Action<string, string, string>(ShowInfo), D, E, F);
+            }
+            else
+            {
+                client_output_d.Text = D;
+                client_output_e.Text = E;
+                client_output_f.Text = F;
             }
         }
         private void client_conect_btn_Click(object sender, EventArgs e)
