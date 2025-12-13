@@ -15,6 +15,8 @@ namespace HTTP_server
         private TcpListener FListener;
         private Thread FListenerThread;
         private bool FIsServerRunning = false;
+        private string FLastJSON = "";
+        private int FReqCount = 0;
 
         private TcpClient FClient;
 
@@ -27,6 +29,8 @@ namespace HTTP_server
                 return;
             try
             {
+                FLastJSON = "";
+                FReqCount = 0;
                 FListener = new TcpListener(IPAddress.Any, serverPort);
                 FListenerThread = new Thread(new ThreadStart(ReceiveConnect));
                 FListenerThread.IsBackground = true;
@@ -115,8 +119,19 @@ namespace HTTP_server
                     Logger.Log(LOG_ID, "[BODY]");
                     Logger.Log(LOG_ID, $"{r.JsonBody}");
                     Logger.Log_2(r.A, r.B, r.C);
-                    Dictionary<string, string> map = Logger.GetMap();
-                    SendResponse(client, map);
+
+                    if(r.Path == "/")
+                    {
+                        FLastJSON = r.JsonBody;
+                        FReqCount += 1;
+                        Dictionary<string, string> map = Logger.GetMap();
+                        SendMap(client, map);
+                    }
+                    else if (r.Path == "/stat/")
+                    {
+                        string html = BuildStatHtml();
+                        SendResponse(client, html, "text/html; charset=utf-8", false);
+                    }
                 }
                 req = "";
             }
@@ -124,18 +139,30 @@ namespace HTTP_server
             client.Close();
         }
 
-        public void SendResponse(TcpClient client, Dictionary<string, string> map)
+        public void SendMap(TcpClient client, Dictionary<string, string> map)
         {
             string json = ConvertToJson(map);
-            string base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
-            string response = "HTTP/1.1 200 OK\r\n" 
-                + "Content-Type: application/json\r\n" 
+            SendResponse(client, json);
+        }
+        public void SendResponse(TcpClient client, string data, string ContentType = "application/json", bool encodingBase64 = true)
+        {
+            string body;
+            if (encodingBase64 == true)
+            {
+                body = Convert.ToBase64String(Encoding.UTF8.GetBytes(data));
+            }
+            else
+            {
+                body = data;
+            }
+            string response = "HTTP/1.1 200 OK\r\n"
+                + $"Content-Type: {ContentType}\r\n"
                 + "Connection: keep-alive\r\n"
-                + "\r\n" 
-                + base64;
-            byte[] data = Encoding.UTF8.GetBytes(response);
-            client.GetStream().Write(data, 0, data.Length);
-            Logger.Log(LOG_ID, $"Ответ отправлен: {json}");
+                + "\r\n"
+                + body;
+            byte[] buf = Encoding.UTF8.GetBytes(response);
+            client.GetStream().Write(buf, 0, buf.Length);
+            Logger.Log(LOG_ID, $"Ответ отправлен: {data}");
         }
 
         private string ConvertToJson(Dictionary<string, string> map)
@@ -166,6 +193,17 @@ namespace HTTP_server
                 return "";
             }
             return s.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n").Replace("\r", "\\r");
+        }
+
+        private string BuildStatHtml()
+        {
+            return $@"<!DOCTYPE html>
+            <html>
+                <body>
+                    Запросов: {FReqCount}<br>
+                    Последний: {FLastJSON}
+                </body>
+            </html>";
         }
 
     }
