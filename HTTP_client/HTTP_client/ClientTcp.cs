@@ -71,7 +71,7 @@ namespace HTTP_client
                     break;
                 }
 
-                string req = Encoding.ASCII.GetString(message, 0, bytes).Trim();
+                string req = Encoding.UTF8.GetString(message, 0, bytes).Trim();
                 Logger.Log(LOG_ID, "RCV: " + req);
                 if (req.IndexOf("\r\n\r\n") >= 0)
                 {
@@ -101,7 +101,7 @@ namespace HTTP_client
                 try
                 {
                     string httpRequest = HRequest(clientMessage);
-                    byte[] messageData = Encoding.UTF8.GetBytes(httpRequest);
+                    byte[] messageData = Encoding.ASCII.GetBytes(httpRequest);
                     FClient.GetStream().Write(messageData, 0, messageData.Length);
                     Logger.Log(LOG_ID, "Отправлен HTTP-запрос:\n" + httpRequest);
                 }
@@ -114,7 +114,7 @@ namespace HTTP_client
         // зафиксируй в гит! ау
         private string HRequest (string Body)
         {
-            int content = Encoding.ASCII.GetByteCount(Body);
+            int content = Encoding.UTF8.GetByteCount(Body);
             string request = $"POST / HTTP/1.1\r\n" 
                            + $"Host: {FClientIp}:{FClientPort}\r\n"
                            + $"Content-Length: {content}\r\n"
@@ -135,7 +135,7 @@ namespace HTTP_client
             {
                 string json = ConvertToJson(map);
                 Logger.Log(LOG_ID, $"JSON: {json}");
-                string base64 = Convert.ToBase64String(Encoding.ASCII.GetBytes(json));
+                string base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
                 Logger.Log(LOG_ID, $"Base64: {base64}");
                 SendRequest(base64);
             }

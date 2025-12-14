@@ -32,7 +32,7 @@ namespace HTTP_server
                 FLastJSON = "";
                 FReqCount = 0;
                 FListener = new TcpListener(IPAddress.Any, serverPort);
-                FListenerThread = new Thread(new ThreadStart(ReceiveConnect));
+                FListenerThread = new Thread(new ThreadStart(ReceiveConnection));
                 FListenerThread.IsBackground = true;
                 FListenerThread.Start();
                 FIsServerRunning = true;
@@ -62,7 +62,7 @@ namespace HTTP_server
             Logger.Log(LOG_ID, "Сервер остановлен!");
         }
 
-        private void ReceiveConnect()
+        private void ReceiveConnection()
         {
             try
             {
@@ -102,7 +102,7 @@ namespace HTTP_server
                 {
                     break;
                 }
-                req += Encoding.ASCII.GetString(tmp_buf, 0, bytes);
+                req += Encoding.UTF8.GetString(tmp_buf, 0, bytes);
                 Logger.Log(LOG_ID, "RCV: "+ req);
                 if (req.IndexOf("\r\n\r\n") >= 0)
                 {
@@ -131,6 +131,11 @@ namespace HTTP_server
                     {
                         string html = BuildStatHtml();
                         SendResponse(client, html, "text/html; charset=utf-8", false);
+                        break;
+                    }
+                    else {
+                        Logger.Log(LOG_ID, "Не опознаный запрос!");
+                        break;
                     }
                 }
                 req = "";
