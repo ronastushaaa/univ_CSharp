@@ -72,7 +72,9 @@ namespace HTTP_server
                 {
                     TcpClient client = FListener.AcceptTcpClient(); // Получаем входящие подключение
                     Logger.Log(LOG_ID, $"Клиент подключен {client.Client.RemoteEndPoint}");
-                    HandleClientData(client);
+                    Thread clientThread = new Thread(delegate () { HandleClientData(client); });
+                    clientThread.IsBackground = true;
+                    clientThread.Start();
                 }
             }
             catch (Exception ex)
@@ -131,9 +133,11 @@ namespace HTTP_server
                     {
                         string html = BuildStatHtml();
                         SendResponse(client, html, "text/html; charset=utf-8", false);
+                        FReqCount += 1;
                         break;
                     }
-                    else {
+                    else 
+                    {
                         Logger.Log(LOG_ID, "Не опознаный запрос!");
                         break;
                     }
