@@ -169,7 +169,7 @@ namespace HTTP_server
                 + "Connection: keep-alive\r\n"
                 + "\r\n"
                 + body;
-            byte[] buf = Encoding.UTF8.GetBytes(response);
+            byte[] buf = Encoding.ASCII.GetBytes(response);
             client.GetStream().Write(buf, 0, buf.Length);
             Logger.Log(LOG_ID, $"Ответ отправлен: {data}");
         }

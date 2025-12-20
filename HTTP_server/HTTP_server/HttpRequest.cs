@@ -77,7 +77,7 @@ namespace HTTP_server
             {
                 body = req.Substring(bodyIndex + 4).Trim();
             }
-            string jsonBody = Encoding.ASCII.GetString(Convert.FromBase64String(body));
+            string jsonBody = Encoding.UTF8.GetString(Convert.FromBase64String(body));
             string v1 = "";
             string v2 = "";
             string v3 = "";
