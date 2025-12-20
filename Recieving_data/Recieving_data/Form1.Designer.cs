@@ -28,24 +28,27 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.lst_data = new System.Windows.Forms.ListBox();
             this.start_btn = new System.Windows.Forms.Button();
             this.stop_btn = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.cbx_choose_mode = new System.Windows.Forms.ComboBox();
-            this.txt_recording = new System.Windows.Forms.TextBox();
+            this.txt_freq = new System.Windows.Forms.TextBox();
             this.txt_port = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.checkBox_show = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.txt_name_file = new System.Windows.Forms.TextBox();
             this.btn_selectFile = new System.Windows.Forms.Button();
-            this.checkBox_show = new System.Windows.Forms.CheckBox();
+            this.txt_name_file = new System.Windows.Forms.TextBox();
+            this.fileTimer = new System.Windows.Forms.Timer(this.components);
+            this.drawingTimer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -55,7 +58,7 @@
             // 
             this.pictureBox1.Location = new System.Drawing.Point(644, 27);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(616, 619);
+            this.pictureBox1.Size = new System.Drawing.Size(616, 604);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
@@ -108,12 +111,12 @@
             this.cbx_choose_mode.Size = new System.Drawing.Size(273, 24);
             this.cbx_choose_mode.TabIndex = 5;
             // 
-            // txt_recording
+            // txt_freq
             // 
-            this.txt_recording.Location = new System.Drawing.Point(27, 109);
-            this.txt_recording.Name = "txt_recording";
-            this.txt_recording.Size = new System.Drawing.Size(145, 22);
-            this.txt_recording.TabIndex = 6;
+            this.txt_freq.Location = new System.Drawing.Point(27, 109);
+            this.txt_freq.Name = "txt_freq";
+            this.txt_freq.Size = new System.Drawing.Size(145, 22);
+            this.txt_freq.TabIndex = 6;
             // 
             // txt_port
             // 
@@ -154,7 +157,7 @@
             this.groupBox1.Controls.Add(this.checkBox_show);
             this.groupBox1.Controls.Add(this.cbx_choose_mode);
             this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.txt_recording);
+            this.groupBox1.Controls.Add(this.txt_freq);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.txt_port);
             this.groupBox1.Controls.Add(this.label1);
@@ -164,6 +167,16 @@
             this.groupBox1.TabIndex = 11;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Данные для отображения";
+            // 
+            // checkBox_show
+            // 
+            this.checkBox_show.AutoSize = true;
+            this.checkBox_show.Location = new System.Drawing.Point(27, 204);
+            this.checkBox_show.Name = "checkBox_show";
+            this.checkBox_show.Size = new System.Drawing.Size(220, 20);
+            this.checkBox_show.TabIndex = 11;
+            this.checkBox_show.Text = "Показывать данные таблицы";
+            this.checkBox_show.UseVisualStyleBackColor = true;
             // 
             // label4
             // 
@@ -194,13 +207,6 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Выбор файла";
             // 
-            // txt_name_file
-            // 
-            this.txt_name_file.Location = new System.Drawing.Point(19, 32);
-            this.txt_name_file.Name = "txt_name_file";
-            this.txt_name_file.Size = new System.Drawing.Size(514, 22);
-            this.txt_name_file.TabIndex = 0;
-            // 
             // btn_selectFile
             // 
             this.btn_selectFile.Location = new System.Drawing.Point(412, 60);
@@ -210,15 +216,16 @@
             this.btn_selectFile.Text = "Select File";
             this.btn_selectFile.UseVisualStyleBackColor = true;
             // 
-            // checkBox_show
+            // txt_name_file
             // 
-            this.checkBox_show.AutoSize = true;
-            this.checkBox_show.Location = new System.Drawing.Point(27, 204);
-            this.checkBox_show.Name = "checkBox_show";
-            this.checkBox_show.Size = new System.Drawing.Size(220, 20);
-            this.checkBox_show.TabIndex = 11;
-            this.checkBox_show.Text = "Показывать данные таблицы";
-            this.checkBox_show.UseVisualStyleBackColor = true;
+            this.txt_name_file.Location = new System.Drawing.Point(19, 32);
+            this.txt_name_file.Name = "txt_name_file";
+            this.txt_name_file.Size = new System.Drawing.Size(514, 22);
+            this.txt_name_file.TabIndex = 0;
+            // 
+            // fileTimer
+            // 
+            this.fileTimer.Tick += new System.EventHandler(this.fileTimer_Tick);
             // 
             // Form1
             // 
@@ -254,7 +261,7 @@
         private System.Windows.Forms.Button stop_btn;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.ComboBox cbx_choose_mode;
-        private System.Windows.Forms.TextBox txt_recording;
+        private System.Windows.Forms.TextBox txt_freq;
         private System.Windows.Forms.TextBox txt_port;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
@@ -266,6 +273,8 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button btn_selectFile;
         private System.Windows.Forms.TextBox txt_name_file;
+        private System.Windows.Forms.Timer fileTimer;
+        private System.Windows.Forms.Timer drawingTimer;
     }
 }
 
